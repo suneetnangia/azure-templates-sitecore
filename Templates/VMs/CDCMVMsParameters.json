@@ -1,0 +1,36 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "East US"
+    },
+    "numberOfInstances": {
+      "value": 1
+    },
+    "vmPrefix": {
+      "value": "CDCMVM"
+    },
+    "publicIPAddressType": {
+      "value": "Dynamic"
+    },
+    "vmSize": {
+      "value": "Standard_A2"
+    },
+    "adminUserName": {
+      "value": "cdcmvmadmin"
+    },
+    "adminPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "virtualNetworkName": {
+      "value": "SitecoreIaaSNet"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "SitecoreIaaS"
+    },
+    "subnetName": {
+      "value": "CDCMSubnet"
+    }
+  }
+}

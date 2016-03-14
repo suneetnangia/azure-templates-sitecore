@@ -1,0 +1,51 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "East US"
+    },
+    "vmPrefix": {
+      "value": "ContentDBVM"
+    },
+    "vmSize": {
+      "value": "Standard_A4"
+    },
+    "adminUserName": {
+      "value": "contentdbvmadmin"
+    },
+    "adminPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "sqlLoginName": {
+      "value": "sitecoreUser"
+    },
+    "sqlPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "dbUserName": {
+      "value": "sitecoreUser"
+    },
+    "dbRoleName": {
+      "value": "db_owner"
+    },
+    "virtualNetworkName": {
+      "value": "SitecoreIaaSNet"
+    },
+    "virtualNetworkResourceGroup": {
+      "value": "SitecoreIaaS"
+    },
+    "subnet1Name": {
+      "value": "DBSubnet"
+    },
+    "customScriptFileUri1": {
+      "value": ""
+    },
+    "customScriptFileUri2": {
+      "value": ""
+    },
+    "customScriptFileToRun": {
+      "value": "DeployDBsStartup.ps1"
+    }
+  }
+}

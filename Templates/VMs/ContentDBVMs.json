@@ -1,0 +1,333 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "West Europe",
+      "allowedValues": [
+        "West US",
+        "East US",
+        "West Europe",
+        "North Europe"
+      ],
+      "metadata": {
+        "description": "Location of resources"
+      }
+    },
+    "vmPrefix": {
+      "type": "string",
+      "defaultValue": "VM",
+      "metadata": {
+        "description": "Prefix for VM related resources."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_A0",
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4"
+      ],
+      "metadata": {
+        "description": "Size of the VM"
+      }
+    },
+    "imagePublisher": {
+      "type": "string",
+      "defaultValue": "MicrosoftSQLServer",
+      "metadata": {
+        "description": "Image Publisher"
+      }
+    },
+    "imageOffer": {
+      "type": "string",
+      "defaultValue": "SQL2014SP1-WS2012R2",
+      "metadata": {
+        "description": "Image Offer"
+      }
+    },
+    "imageSKU": {
+      "type": "string",
+      "defaultValue": "Enterprise",
+      "metadata": {
+        "description": "Image SKU"
+      }
+    },
+    "adminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Admin Username"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "VM Password"
+      }
+    },
+    "sqlLoginName": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server Login Name"
+      }
+    },
+    "sqlPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL Server Login Password"
+      }
+    },
+    "dbUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server DB User Name"
+      }
+    },
+    "dbRoleName": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server DB Role Name"
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "VNET Name"
+      }
+    },
+    "virtualNetworkResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource Group VNET is deployed in"
+      }
+    },
+    "subnet1Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the subnet inside the VNET"
+      }
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS"
+      ],
+      "metadata": {
+        "description": "Type of storage account"
+      }
+    },
+    "customScriptFileUri1": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell script url."
+      }
+    },
+    "customScriptFileUri2": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell script url."
+      }
+    },
+    "customScriptFileToRun": {
+      "type": "string",
+      "defaultValue": "DeployDBs.ps1",
+      "metadata": {
+        "description": "Powershell script to run."
+      }
+    }
+  },
+  "variables": {
+    "osDisk": "[concat('http://',concat(parameters('vmPrefix'),'Storage'),'.blob.core.windows.net/vhds/', concat(parameters('vmPrefix'),'OS.vhd'))]",
+    "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('subnet1Name'))]",
+    "sizeOfEachDataDiskInGB": 1023,
+    "storageAccountName": "[toLower(concat(parameters('vmPrefix'),'Storage'))]",
+    "publicIPName": "[concat(parameters('vmPrefix'),'PublicIP')]",
+    "publicIPAddressType": "Dynamic",
+    "nicName": "[concat(parameters('vmPrefix'),'NIC')]",
+    "dataDisk1VhdName": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/vhds','/',parameters('vmPrefix'),'DataDisk1.vhd')]",
+    "dataDisk2VhdName": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/vhds','/',parameters('vmPrefix'),'DataDisk2.vhd')]",
+    "localUnzippedDBFilesPath": "d:\\SitecoreSetup\\Sitecore 8.1 rev. 151207\\Databases",
+    "commandToExecute": "[concat('powershell.exe -File', ' ', parameters('customScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('localUnzippedDBFilesPath'), ' ','<url of sitecore zip pkg>', ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('adminUserName'), ' ', parameters('adminPassword'), ' ', parameters('sqlLoginName'), ' ', parameters('sqlPassword'), ' ', parameters('dbUserName'), ' ', parameters('dbRoleName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[parameters('location')]",
+      "properties": {
+        "accountType": "[parameters('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('publicIPAddressType')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnet1Ref')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('vmPrefix')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmPrefix')]",
+          "adminUsername": "[parameters('adminUserName')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('imagePublisher')]",
+            "offer": "[parameters('imageOffer')]",
+            "sku": "[parameters('imageSKU')]",
+            "version": "latest"
+          },
+          "dataDisks": [
+            {
+              "name": "datadisk1",
+              "diskSizeGB": "[variables('sizeOfEachDataDiskInGB')]",
+              "lun": 0,
+              "vhd": {
+                "Uri": "[variables('dataDisk1VhdName')]"
+              },
+              "createOption": "Empty",
+              "caching": "None"
+            },
+            {
+              "name": "datadisk2",
+              "diskSizeGB": "[variables('sizeOfEachDataDiskInGB')]",
+              "lun": 1,
+              "vhd": {
+                "Uri": "[variables('dataDisk2VhdName')]"
+              },
+              "createOption": "Empty",
+              "caching": "ReadOnly"
+            }
+          ],
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[variables('osDisk')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "ConfigureVMDSC",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('vmPrefix')))]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMDSC"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "",
+              "configurationFunction": "DBVMSetup.ps1\\DBVMSetup",
+              "properties": {
+                "nodeName": "[concat(parameters('vmPrefix'))]"
+              }
+            },
+            "protectedSettings": { }
+          }
+        },
+        {
+          "name": "ConfigureVMPS",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(parameters('vmPrefix')))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmPrefix'), 'ConfigureVMDSC')]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMPS"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[parameters('customScriptFileUri1')]",
+                "[parameters('customScriptFileUri2')]"
+              ],
+              "commandToExecute": "[variables('commandToExecute')]",
+              "timestamp": 123456812
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

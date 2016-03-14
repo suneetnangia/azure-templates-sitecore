@@ -1,0 +1,27 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "East US"
+    },
+    "vnetName": {
+      "value": "SitecoreIaaSNet"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.0.0.0/8"
+    },
+    "subnet1Name": {
+      "value": "CDCMSubnet"
+    },
+    "subnet1Prefix": {
+      "value": "10.0.0.0/24"
+    },
+    "subnet2Name": {
+      "value": "DBSubnet"
+    },
+    "subnet2Prefix": {
+      "value": "10.0.1.0/24"
+    }
+  }
+}
