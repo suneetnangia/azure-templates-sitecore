@@ -81,6 +81,7 @@
     },
     "sqlServerVMAdminUsername": {
       "type": "string",
+      "defaultValue": "sqlservervmadmin",
       "metadata": {
         "description": "SQL Server VM Admin Username."
       }
@@ -93,6 +94,7 @@
     },
     "sqlServerSqlLoginName": {
       "type": "string",
+      "defaultValue": "sitecoreUser",
       "metadata": {
         "description": "SQL Server SQL login name."
       }
@@ -105,32 +107,35 @@
     },
     "sqlServerDbUsername": {
       "type": "string",
+      "defaultValue": "sitecoreUser",
       "metadata": {
         "description": "SQL Server DB User Name"
       }
     },
     "sqlServerDbRoleName": {
       "type": "string",
+      "defaultValue": "db_owner",
       "metadata": {
         "description": "SQL Server DB Role Name"
       }
     },
     "sqlServerSubnetName": {
       "type": "string",
+      "defaultValue": "DBSubnet",
       "metadata": {
         "description": "Name of the subnet inside the vNet where SQL Server VM is created."
       }
     },
     "sqlServerBootstrapScriptUri": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1",
       "metadata": {
         "description": "Powershell bootstrap script url which runs other script(s) under VM local admin account on the SQL Server."
       }
     },
     "sqlServerDBConfigScriptUri": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfiguration.ps1",
       "metadata": {
         "description": "Powershell script url which configures Sitecore DB on the server."
       }
@@ -144,7 +149,7 @@
     },
     "sqlServerSitecoreDBConfigDSCScriptUri": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreDBServerSetup.ps1.zip",
       "metadata": {
         "description": "Powershell DSC script url which runs on SQL Server."
       }
@@ -171,6 +176,7 @@
     },
     "cdcmVMAdminUsername": {
       "type": "string",
+      "defaultValue": "cdcmvmadmin",
       "metadata": {
         "description": "CM CD VM local admin username."
       }
@@ -183,21 +189,21 @@
     },
     "cdcmSitecoreConfigScriptUri": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1",
       "metadata": {
         "description": "Powershell script url which configure Sitecore on the CD CM server."
       }
     },
     "cdcmCustomScriptFileToRun": {
       "type": "string",
-      "defaultValue": "CDCMConfiguration.ps1",
+      "defaultValue": "SitecoreCDCMServerConfiguration.ps1",
       "metadata": {
         "description": "Script to configure CD CM server."
       }
     },
     "cdcmSitecoreConfigDSCScriptUri": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip",
       "metadata": {
         "description": "Powershell DSC script to configure CD CM server."
       }
