@@ -1,0 +1,3 @@
+#Login-AzureRmAccount
+Publish-AzureRmVMDscConfiguration -ResourceGroupName SitecorePublicRepo  -ContainerName psdscscripts -StorageAccountName sitecorepublicrepo -ConfigurationPath "C:\Source\Sitecore\Microsoft.Sitecore\Microsoft.Sitecore.ResourceGroupDeployments\DSC\SitecoreDBServerSetup.ps1" -Force
+                                                                                                    

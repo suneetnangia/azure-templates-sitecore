@@ -1,0 +1,731 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Common Parameters
+    "sitecoreSetupSecureUri": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sitecore secure setup access url."
+      }
+    },
+    "sitecoreLicenseSecureUri": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Sitecore secure license url."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "West Europe",
+      "allowedValues": [
+        "West US",
+        "East US",
+        "West Europe",
+        "North Europe"
+      ],
+      "metadata": {
+        "description": "Location of resources."
+      }
+    },
+    "resourcePrefix": {
+      "type": "string",
+      "defaultValue": "MSSitecore",
+      "metadata": {
+        "description": "Prefix for the azure resources (use alphabets and less than 10 characters only)."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "SitecoreVNet",
+      "metadata": {
+        "description": "Virtual network name where the Sitecore resources are deployed."
+      }
+    },
+    "virtualNetworkAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/8",
+      "metadata": {
+        "description": "Virtual network address space prefix."
+      }
+    },
+    "frontendWebSubnetName": {
+      "type": "string",
+      "defaultValue": "Subnet1",
+      "metadata": {
+        "description": "Frontend web subnet name."
+      }
+    },
+    "frontendWebSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Frontend web subnet prefix."
+      }
+    },
+    "backendDBSubnetName": {
+      "type": "string",
+      "defaultValue": "Subnet2",
+      "metadata": {
+        "description": "Backend DB subnet name."
+      }
+    },
+    "backendDBSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.1.0/24",
+      "metadata": {
+        "description": "Backend DB subnet prefix"
+      }
+    },
+
+    // SQL Server DB Parameters
+    "sqlServerVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS13",
+      "allowedValues": [
+        "Standard_DS3",
+        "Standard_DS4",
+        "Standard_DS12",
+        "Standard_DS13",
+        "Standard_DS14"
+      ],
+      "metadata": {
+        "description": "Size of the SQL Server VM"
+      }
+    },
+    "sqlServerVMAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server VM Admin Username."
+      }
+    },
+    "sqlServerVMAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL Server VM Admin Password."
+      }
+    },
+    "sqlServerSqlLoginName": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server SQL login name."
+      }
+    },
+    "sqlServerSqlLoginPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL Server SQL Login Password"
+      }
+    },
+    "sqlServerDbUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server DB User Name"
+      }
+    },
+    "sqlServerDbRoleName": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Server DB Role Name"
+      }
+    },
+    "sqlServerSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the subnet inside the vNet where SQL Server VM is created."
+      }
+    },
+    "sqlServerBootstrapScriptUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell bootstrap script url which runs other script(s) under VM local admin account on the SQL Server."
+      }
+    },
+    "sqlServerDBConfigScriptUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell script url which configures Sitecore DB on the server."
+      }
+    },
+    "sqlServerCustomScriptFileToRun": {
+      "type": "string",
+      "defaultValue": "SitecoreDBServerConfigurationBootstrapper.ps1",
+      "metadata": {
+        "description": "Script to run on the SQL Server."
+      }
+    },
+    "sqlServerSitecoreDBConfigDSCScriptUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell DSC script url which runs on SQL Server."
+      }
+    },
+
+    // CD CM Server Parameters
+    "cdcmNumberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of VMs needed to load balance the traffic to Sitecore CD CM role."
+      }
+    },
+    "cdcmVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_A4",
+      "allowedValues": [
+        "Standard_A4",
+        "Standard_A6",
+        "Standard_A7"
+      ],
+      "metadata": {
+        "description": "Allowed/recommended size of the VMs."
+      }
+    },
+    "cdcmVMAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "CM CD VM local admin username."
+      }
+    },
+    "cdcmVMAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "CM CD VM local admin password."
+      }
+    },
+    "cdcmSitecoreConfigScriptUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell script url which configure Sitecore on the CD CM server."
+      }
+    },
+    "cdcmCustomScriptFileToRun": {
+      "type": "string",
+      "defaultValue": "CDCMConfiguration.ps1",
+      "metadata": {
+        "description": "Script to configure CD CM server."
+      }
+    },
+    "cdcmSitecoreConfigDSCScriptUri": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Powershell DSC script to configure CD CM server."
+      }
+    }
+  },
+  "variables": {
+    // Common Variables
+    "VnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "setupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
+    "licenseSecureUri": "[concat('\"',parameters('sitecoreLicenseSecureUri'), '\"')]",
+
+    // SQL DB Server Variables
+    "sqlServerResourcePrefix": "[concat(parameters('resourcePrefix'), 'SQL')]",
+    "sqlServerImagePublisher": "MicrosoftSQLServer",
+    "sqlServerImageOffer": "SQL2014SP1-WS2012R2",
+    "sqlServerImageSKU": "Enterprise",
+    "sqlServerStorageAccountName": "[toLower(concat(variables('sqlServerResourcePrefix'),'Storage'))]",
+    "sqlServerOsDisk": "[concat('http://', variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('sqlServerResourcePrefix'),'OS.vhd'))]",
+    "sqlServerDataDisk1VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk1.vhd')]",
+    "sqlServerDataDisk2VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk2.vhd')]",
+    "sqlServerSubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('backendDBSubnetName'))]",
+    "sqlServerSizeOfEachDataDiskInGB": 128, //P10
+    "sqlServerStorageAccountType": "Premium_LRS",
+    "sqlServerPublicIPName": "[concat(variables('sqlServerResourcePrefix'),'PublicIP')]",
+    "sqlServerPublicIPAddressType": "Dynamic",
+    "sqlServerNicName": "[concat(variables('sqlServerResourcePrefix'),'NIC')]",
+    //Double Quoted Params for Command
+    "sqlServerLocalUnzippedDBFilesPath": "[concat('\"', 'd:\\SitecoreSetup\\Sitecore 8.1 rev. 151207\\Databases', '\"')]",
+    "sqlServerSetupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
+    "sqlServerCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('sqlServerCustomScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('sqlServerLocalUnzippedDBFilesPath'), ' ', variables('setupSecureUri'), ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('sqlServerVMAdminUsername'), ' ', parameters('sqlServerVMAdminPassword'), ' ', parameters('sqlServerSqlLoginName'), ' ', parameters('sqlServerSqlLoginPassword'), ' ', parameters('sqlServerDbUsername'), ' ', parameters('sqlServerDbRoleName'))]",
+
+    // CD CM Server Variables
+    "cdcmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CDCM')]",
+    "cdcmImagePublisher": "MicrosoftWindowsServer",
+    "cdcmImageOffer": "WindowsServer",
+    "cdcmImageSKU": "2012-R2-Datacenter",
+    "cdcmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
+    "cdcmStorageAccountName": "[toLower(concat(variables('cdcmResourcePrefix'),'storage'))]",
+    "cdcmPublicLBIPName": "[concat(variables('cdcmResourcePrefix'),'LBPublicIP')]",
+    "cdcmPublicLBIPDNSName": "[toLower(concat(variables('cdcmResourcePrefix'),'publicLBIPName'))]",
+    "cdcmPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdcmPublicLBIPName'))]",
+    "cdcmPublicLBId": "[resourceId('Microsoft.Network/loadBalancers',variables('cdcmPublicLBName'))]",
+    "cdcmPublicLBName": "[concat(variables('cdcmResourcePrefix'),'LBPublic')]",
+    "cdcmPublicLBFrontEndIPConfigId": "[concat(variables('cdcmPublicLBId'),'/frontendIPConfigurations/LoadBalancerFE')]",
+    "cdcmPublicLBPoolId": "[concat(variables('cdcmPublicLBId'),'/backendAddressPools/BEPool')]",
+    "cdcmPublicLBProbeId": "[concat(variables('cdcmPublicLBId'),'/probes/tcpPort80Probe')]",
+    "cdcmPublicIPAddressType": "Dynamic",
+    "cdcmStorageAccountType": "Standard_LRS",
+    //Double Quoted Params for Command
+    "cdcmCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
+    "cdcmWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
+    "cdcmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
+    "cdcmReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
+    "cdcmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
+    "cdcmCoreConnStrParam": "variables('coreConnStr')",
+    "cdcmWebConnStrParam": "variables('webConnStr')",
+    "cdcmMasterConnStrParam": "variables('masterConnStr')",
+    "cdcmReportingConnStrParam": "variables('reportingConnStr')",
+    "cdcmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdcmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdcmCoreConnStr'), ' ', variables('cdcmMasterConnStr'), ' ', variables('cdcmWebConnStr'), ' ', variables('cdcmReportingConnStr'), ' ', variables('cdcmSessionsConnStr'))]"
+  },
+  "resources": [
+    // Virtual Network Configuration
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('frontendWebSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('frontendWebSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('backendDBSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('backendDBSubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+
+    // SQL Server Database Configuration
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('sqlServerStorageAccountName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "accountType": "[variables('sqlServerStorageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('sqlServerPublicIPName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('sqlServerPublicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('sqlServerNicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('sqlServerPublicIPName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "[variables('sqlServerPublicIPAddressType')]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('sqlServerPublicIPName'))]"
+              },
+              "subnet": {
+                "id": "[variables('sqlServerSubnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('sqlServerResourcePrefix')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('sqlServerStorageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('sqlServerNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('sqlServerVMSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('sqlServerResourcePrefix')]",
+          "adminUsername": "[parameters('sqlServerVMAdminUserName')]",
+          "adminPassword": "[parameters('sqlServerVMAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('sqlServerImagePublisher')]",
+            "offer": "[variables('sqlServerImageOffer')]",
+            "sku": "[variables('sqlServerImageSKU')]",
+            "version": "latest"
+          },
+          "dataDisks": [
+            {
+              "name": "datadisk1",
+              "diskSizeGB": "[variables('sqlServerSizeOfEachDataDiskInGB')]",
+              "lun": 0,
+              "vhd": {
+                "Uri": "[variables('sqlServerDataDisk1VhdName')]"
+              },
+              "createOption": "Empty",
+              "caching": "None"
+            },
+            {
+              "name": "datadisk2",
+              "diskSizeGB": "[variables('sqlServerSizeOfEachDataDiskInGB')]",
+              "lun": 1,
+              "vhd": {
+                "Uri": "[variables('sqlServerDataDisk2VhdName')]"
+              },
+              "createOption": "Empty",
+              "caching": "ReadOnly"
+            }
+          ],
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[variables('sqlServerOsDisk')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('sqlServerNicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "false",
+            "storageUri": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "ConfigureVMDSC",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('sqlServerResourcePrefix'))]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMDSC"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "[parameters('sqlServersitecoreDBConfigDSCScriptUri')]",
+              "configurationFunction": "SitecoreDBServerSetup.ps1\\SitecoreDBServerSetup",
+              "properties": {
+                "nodeName": "[variables('sqlServerResourcePrefix')]"
+              }
+            },
+            "protectedSettings": { }
+          }
+        },
+        {
+          "name": "ConfigureVMPS",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('sqlServerResourcePrefix'))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('sqlServerResourcePrefix'), 'ConfigureVMDSC')]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMPS"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[parameters('sqlServerBootstrapScriptUri')]",
+                "[parameters('sqlServerDBConfigScriptUri')]"
+              ],
+              "commandToExecute": "[variables('sqlServerCustomScriptCommandToExecute')]",
+              "timestamp": 12345711
+            }
+          }
+        }
+      ]
+    },
+
+    // CMCD Servers Configuration
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('cdcmStorageAccountName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "accountType": "[variables('cdcmStorageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdcmResourcePrefix'),'AvailabilitySet')]",
+      "location": "[parameters('location')]",
+      "properties": { }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdcmNumberOfInstances')]"
+      },
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdcmResourcePrefix'),copyindex(),'NIC')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdcmNumberOfInstances')]"
+      },
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/loadBalancers/', variables('cdcmPublicLBName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP'))]"
+              },
+              "subnet": {
+                "id": "[variables('cdcmSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(variables('cdcmPublicLBId'), '/backendAddressPools/BEPool')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdcmNumberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('cdcmStorageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('cdcmResourcePrefix'),copyindex(),'NIC'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', concat(variables('cdcmResourcePrefix'),'AvailabilitySet'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('cdcmVMSize')]"
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',concat(variables('cdcmResourcePrefix'),'AvailabilitySet'))]"
+        },
+        "osProfile": {
+          "computerName": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
+          "adminUsername": "[parameters('cdcmVMAdminUsername')]",
+          "adminPassword": "[parameters('cdcmVMAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('cdcmImagePublisher')]",
+            "offer": "[variables('cdcmImageOffer')]",
+            "sku": "[variables('cdcmImageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',variables('cdcmStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cdcmResourcePrefix'),copyindex(),'OS.vhd'))]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('cdcmResourcePrefix'),copyindex(),'NIC'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',variables('cdcmStorageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "ConfigureVMDSC",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMDSC"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": false,
+            "settings": {
+              "modulesUrl": "[parameters('cdcmSitecoreConfigDSCScriptUri')]",
+              "configurationFunction": "SitecoreCMCDServerSetup.ps1\\SitecoreCMCDServerSetup",
+              "properties": {
+                "nodeName": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
+                "sitecoreAppPoolName": "SitecoreAppPool",
+                "sitecoreWebsiteName": "AzureSitecore"
+              }
+            },
+            "protectedSettings": { }
+          }
+        },
+        {
+          "name": "ConfigureVMPS",
+          "type": "extensions",
+          "location": "[parameters('location')]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(variables('cdcmResourcePrefix'),copyindex()), 'ConfigureVMDSC')]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMPS"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[parameters('cdcmSitecoreConfigScriptUri')]"
+              ],
+              "commandToExecute": "[variables('cdcmCustomScriptCommandToExecute')]",
+              "timestamp": 400001
+            }
+          }
+        }
+      ]
+    },
+    // CMCD Servers Load Balancer Configuration
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('cdcmPublicLBIPName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('cdcmPublicLBIPDNSName')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "name": "[variables('cdcmPublicLBName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('cdcmPublicLBIPName'))]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFE",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('cdcmPublicLBIPId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BEPool"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "Http80",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('cdcmPublicLBFrontEndIPConfigId')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('cdcmPublicLBPoolId')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('cdcmPublicLBProbeId')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "tcpPort80Probe",
+            "properties": {
+              "protocol": "tcp",
+              "port": 80,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

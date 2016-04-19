@@ -1,0 +1,99 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Common Server Parameters
+    "sitecoreSetupSecureUri": {
+      "value": ""
+    },
+    "sitecoreLicenseSecureUri": {
+      "value": ""
+    },
+    "location": {
+      "value": "East US"
+    },
+    "virtualNetworkName": {
+      "value": "SitecoreIaaSNet"
+    },
+    "virtualNetworkAddressPrefix": {
+      "value": "10.0.0.0/8"
+    },
+    "frontendWebSubnetName": {
+      "value": "CDCMSubnet"
+    },
+    "frontendWebSubnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "backendDBSubnetName": {
+      "value": "DBSubnet"
+    },
+    "backendDBSubnetPrefix": {
+      "value": "10.0.1.0/24"
+    },
+    "resourcePrefix": {
+      "value": "SitecoreMS"
+    },
+
+    // SQL Server Parameters
+    "sqlServerVMSize": {
+      "value": "Standard_DS4"
+    },
+    "sqlServerVMAdminUserName": {
+      "value": "dbvmadmin"
+    },
+    "sqlServerVMAdminPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "sqlServerSqlLoginName": {
+      "value": "sitecoreUser"
+    },
+    "sqlServerSqlLoginPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "sqlServerDbUserName": {
+      "value": "sitecoreUser"
+    },
+    "sqlServerDbRoleName": {
+      "value": "db_owner"
+    },
+    "sqlServerSubnetName": {
+      "value": "DBSubnet"
+    },
+    "sqlServerBootstrapScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1"
+    },
+    "sqlServerDBConfigScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfiguration.ps1"
+    },
+    "sqlServerCustomScriptFileToRun": {
+      "value": "SitecoreDBServerConfigurationBootstrapper.ps1"
+    },
+    "sqlServerSitecoreDBConfigDSCScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreDBServerSetup.ps1.zip"
+    },
+
+    // CD CM Server Parameters
+    "cdcmNumberOfInstances": {
+      "value": 2
+    },
+    "cdcmVMSize": {
+      "value": "Standard_A4"
+    },
+    "cdcmVMAdminUsername": {
+      "value": "cdcmvmadmin"
+    },
+    "cdcmVMAdminPassword": {
+      "value": "Pa55w0rd*?"
+    },
+
+    "cdcmSitecoreConfigScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1"
+    },
+    "cdcmCustomScriptFileToRun": {
+      "value": "SitecoreCDCMServerConfiguration.ps1"
+    },
+    "cdcmSitecoreConfigDSCScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+﻿f
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Microsoft.Sitecore.ResourceGroupDeployments", "Microsoft.Sitecore.ResourceGroupDeployments\Microsoft.Sitecore.ResourceGroupDeployments.deployproj", "{36F0283B-E5CC-422C-8EC3-BDA3A8111077}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36F0283B-E5CC-422C-8EC3-BDA3A8111077}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36F0283B-E5CC-422C-8EC3-BDA3A8111077}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36F0283B-E5CC-422C-8EC3-BDA3A8111077}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36F0283B-E5CC-422C-8EC3-BDA3A8111077}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://suneetnangia.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Microsoft.Sitecore.ResourceGroupDeployments\\Microsoft.Sitecore.ResourceGroupDeployments.deployproj
+		SccProjectName1 = Microsoft.Sitecore.ResourceGroupDeployments
+		SccLocalPath1 = Microsoft.Sitecore.ResourceGroupDeployments
+	EndGlobalSection
+EndGlobal
