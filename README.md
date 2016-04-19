@@ -8,7 +8,8 @@ Following resources are created by the template-
 - SQL Server on a VM
 
 The template will download and deploy Sitecore 8.1 from the user provided URLs.
-User will need to provide two URLs-
+
+User will need to provide the following two URLs-
 - license.xml URL
 - sitecore zip file URL.
 
@@ -16,6 +17,10 @@ User will need to provide two URLs-
 
 To learn about creating secure SAS urls please see the video tutorial here (@ 2:40)-
 http://storageexplorer.com/
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsuneetnangia%2Fazure-templates-sitecore%2Fmaster%2FMicrosoft.Sitecore%2FMicrosoft.Sitecore.ResourceGroupDeployments%2FTemplates%2FSitecoreIaaS.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 
 Please note this is a work in progress and some of the features in the pipeline are-
 - SQL AlwaysOn
