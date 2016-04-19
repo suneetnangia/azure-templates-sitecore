@@ -2,7 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Common Parameters
     "sitecoreSetupSecureUri": {
       "type": "securestring",
       "defaultValue": "",
@@ -80,7 +79,6 @@
       }
     },
 
-    // SQL Server DB Parameters
     "sqlServerVMSize": {
       "type": "string",
       "defaultValue": "Standard_DS13",
@@ -166,7 +164,6 @@
       }
     },
 
-    // CD CM Server Parameters
     "cdcmNumberOfInstances": {
       "type": "int",
       "defaultValue": 2,
@@ -221,12 +218,11 @@
     }
   },
   "variables": {
-    // Common Variables
+
     "VnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "setupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "licenseSecureUri": "[concat('\"',parameters('sitecoreLicenseSecureUri'), '\"')]",
 
-    // SQL DB Server Variables
     "sqlServerResourcePrefix": "[concat(parameters('resourcePrefix'), 'SQL')]",
     "sqlServerImagePublisher": "MicrosoftSQLServer",
     "sqlServerImageOffer": "SQL2014SP1-WS2012R2",
@@ -241,12 +237,11 @@
     "sqlServerPublicIPName": "[concat(variables('sqlServerResourcePrefix'),'PublicIP')]",
     "sqlServerPublicIPAddressType": "Dynamic",
     "sqlServerNicName": "[concat(variables('sqlServerResourcePrefix'),'NIC')]",
-    //Double Quoted Params for Command
+
     "sqlServerLocalUnzippedDBFilesPath": "[concat('\"', 'd:\\SitecoreSetup\\Sitecore 8.1 rev. 151207\\Databases', '\"')]",
     "sqlServerSetupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "sqlServerCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('sqlServerCustomScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('sqlServerLocalUnzippedDBFilesPath'), ' ', variables('setupSecureUri'), ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('sqlServerVMAdminUsername'), ' ', parameters('sqlServerVMAdminPassword'), ' ', parameters('sqlServerSqlLoginName'), ' ', parameters('sqlServerSqlLoginPassword'), ' ', parameters('sqlServerDbUsername'), ' ', parameters('sqlServerDbRoleName'))]",
 
-    // CD CM Server Variables
     "cdcmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CDCM')]",
     "cdcmImagePublisher": "MicrosoftWindowsServer",
     "cdcmImageOffer": "WindowsServer",
@@ -263,7 +258,7 @@
     "cdcmPublicLBProbeId": "[concat(variables('cdcmPublicLBId'),'/probes/tcpPort80Probe')]",
     "cdcmPublicIPAddressType": "Dynamic",
     "cdcmStorageAccountType": "Standard_LRS",
-    //Double Quoted Params for Command
+
     "cdcmCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
     "cdcmWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
     "cdcmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
@@ -276,7 +271,6 @@
     "cdcmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdcmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdcmCoreConnStr'), ' ', variables('cdcmMasterConnStr'), ' ', variables('cdcmWebConnStr'), ' ', variables('cdcmReportingConnStr'), ' ', variables('cdcmSessionsConnStr'))]"
   },
   "resources": [
-    // Virtual Network Configuration
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/virtualNetworks",
@@ -305,7 +299,6 @@
       }
     },
 
-    // SQL Server Database Configuration
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
@@ -477,7 +470,6 @@
       ]
     },
 
-    // CMCD Servers Configuration
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
@@ -656,7 +648,7 @@
         }
       ]
     },
-    // CMCD Servers Load Balancer Configuration
+
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",

@@ -44,8 +44,6 @@
     <None Include="Scripts\PublishDSC.ps1" />
     <None Include="Templates\SitecoreIaaS.json" />
     <None Include="Templates\SitecoreIaaSParameters.json" />
-    <None Include="Templates\VMs\SitecoreIaaS.json" />
-    <None Include="Templates\VMs\SitecoreIaaSParameters.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tools\AzCopy.exe" />
