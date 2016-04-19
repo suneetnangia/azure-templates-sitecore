@@ -37,7 +37,7 @@
     },
     "frontendWebSubnetName": {
       "type": "string",
-      "defaultValue": "Subnet1",
+      "defaultValue": "CDCMSubnet",
       "metadata": {
         "description": "Frontend web subnet name."
       }
@@ -51,7 +51,7 @@
     },
     "backendDBSubnetName": {
       "type": "string",
-      "defaultValue": "Subnet2",
+      "defaultValue": "DBSubnet",
       "metadata": {
         "description": "Backend DB subnet name."
       }
@@ -116,14 +116,7 @@
       "metadata": {
         "description": "SQL Server DB Role Name"
       }
-    },
-    "sqlServerSubnetName": {
-      "type": "string",
-      "defaultValue": "DBSubnet",
-      "metadata": {
-        "description": "Name of the subnet inside the vNet where SQL Server VM is created."
-      }
-    },
+    },    
     "sqlServerBootstrapScriptUri": {
       "type": "string",
       "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1",
@@ -216,7 +209,7 @@
     "sqlServerImagePublisher": "MicrosoftSQLServer",
     "sqlServerImageOffer": "SQL2014SP1-WS2012R2",
     "sqlServerImageSKU": "Enterprise",
-    "sqlServerStorageAccountName": "[toLower(concat(variables('sqlServerResourcePrefix'),'Storage'))]",
+    "sqlServerStorageAccountName": "[toLower(concat('SQL', uniqueString(resourceGroup().id)))]",
     "sqlServerOsDisk": "[concat('http://', variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('sqlServerResourcePrefix'),'OS.vhd'))]",
     "sqlServerDataDisk1VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk1.vhd')]",
     "sqlServerDataDisk2VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk2.vhd')]",
@@ -236,7 +229,7 @@
     "cdcmImageOffer": "WindowsServer",
     "cdcmImageSKU": "2012-R2-Datacenter",
     "cdcmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
-    "cdcmStorageAccountName": "[toLower(concat(variables('cdcmResourcePrefix'),'storage'))]",
+    "cdcmStorageAccountName": "[toLower(concat('CDCM',uniqueString(resourceGroup().id)))]",
     "cdcmPublicLBIPName": "[concat(variables('cdcmResourcePrefix'),'LBPublicIP')]",
     "cdcmPublicLBIPDNSName": "[toLower(concat(variables('cdcmResourcePrefix'),'publicLBIPName'))]",
     "cdcmPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdcmPublicLBIPName'))]",

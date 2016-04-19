@@ -28,7 +28,7 @@
       "value": "10.0.1.0/24"
     },
     "resourcePrefix": {
-      "value": "SitecoreMS"
+      "value": "Sitecore"
     },
 
     // SQL Server Parameters
@@ -52,10 +52,7 @@
     },
     "sqlServerDbRoleName": {
       "value": "db_owner"
-    },
-    "sqlServerSubnetName": {
-      "value": "DBSubnet"
-    },
+    },    
     "sqlServerBootstrapScriptUri": {
       "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1"
     },

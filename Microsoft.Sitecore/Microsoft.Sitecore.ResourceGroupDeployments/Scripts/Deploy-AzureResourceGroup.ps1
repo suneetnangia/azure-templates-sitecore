@@ -1,12 +1,12 @@
 ﻿Param(
     [string] $ResourceGroupLocation = 'East US',
-    [string] $ResourceGroupName = 'SitecoreIaaSv4',
+    [string] $ResourceGroupName = 'SitecoreIaaSv5',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageAccountResourceGroupName, 
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
-    [string] $TemplateFile = 'C:\Source\Sitecore\Microsoft.Sitecore\Microsoft.Sitecore.ResourceGroupDeployments\Templates\VMs\SitecoreCDCMVMs.json',
-    [string] $TemplateParametersFile = 'c:\source\sitecore\microsoft.sitecore\microsoft.sitecore.resourcegroupdeployments\templates\vms\sitecorecdcmvmsparameters.json',
+    [string] $TemplateFile = 'C:\Users\sunangi\Source\Repos\azure-templates-sitecore\Microsoft.Sitecore\Microsoft.Sitecore.ResourceGroupDeployments\Templates\SitecoreIaaS.json',
+    [string] $TemplateParametersFile = 'C:\Users\sunangi\Source\Repos\azure-templates-sitecore\Microsoft.Sitecore\Microsoft.Sitecore.ResourceGroupDeployments\Templates\SitecoreIaaSParameters.json',
     [string] $ArtifactStagingDirectory = '..\bin\Debug\staging',
     [string] $AzCopyPath = '..\Tools\AzCopy.exe',
     [string] $DSCSourceFolder = '..\DSC'
