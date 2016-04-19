@@ -8,10 +8,7 @@
     },
     "sitecoreLicenseSecureUri": {
       "value": ""
-    },
-    "location": {
-      "value": "East US"
-    },
+    },   
     "virtualNetworkName": {
       "value": "SitecoreIaaSNet"
     },

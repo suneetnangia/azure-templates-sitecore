@@ -15,25 +15,12 @@
       "metadata": {
         "description": "Sitecore secure license url."
       }
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "West Europe",
-      "allowedValues": [
-        "West US",
-        "East US",
-        "West Europe",
-        "North Europe"
-      ],
-      "metadata": {
-        "description": "Location of resources."
-      }
-    },
+    },  
     "resourcePrefix": {
       "type": "string",
       "defaultValue": "MSSitecore",
       "metadata": {
-        "description": "Prefix for the azure resources (use alphabets and less than 10 characters only)."
+        "description": "A unique prefix for the azure resources (use alphabets and less than 10 characters only)."
       }
     },
     "virtualNetworkName": {
@@ -78,7 +65,6 @@
         "description": "Backend DB subnet prefix"
       }
     },
-
     "sqlServerVMSize": {
       "type": "string",
       "defaultValue": "Standard_DS13",
@@ -218,7 +204,6 @@
     }
   },
   "variables": {
-
     "VnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "setupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "licenseSecureUri": "[concat('\"',parameters('sitecoreLicenseSecureUri'), '\"')]",
@@ -275,7 +260,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[parameters('virtualNetworkName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -303,7 +288,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlServerStorageAccountName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "[variables('sqlServerStorageAccountType')]"
       }
@@ -312,7 +297,7 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlServerPublicIPName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "[variables('sqlServerPublicIPAddressType')]"
       }
@@ -321,7 +306,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlServerNicName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('sqlServerPublicIPName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
@@ -347,7 +332,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2015-06-15",
       "name": "[variables('sqlServerResourcePrefix')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('sqlServerStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('sqlServerNicName'))]"
@@ -417,7 +402,7 @@
         {
           "name": "ConfigureVMDSC",
           "type": "extensions",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', variables('sqlServerResourcePrefix'))]"
@@ -443,7 +428,7 @@
         {
           "name": "ConfigureVMPS",
           "type": "extensions",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', variables('sqlServerResourcePrefix'))]",
@@ -474,7 +459,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
       "name": "[variables('cdcmStorageAccountName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "[variables('cdcmStorageAccountType')]"
       }
@@ -483,7 +468,7 @@
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2015-06-15",
       "name": "[concat(variables('cdcmResourcePrefix'),'AvailabilitySet')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": { }
     },
     {
@@ -494,7 +479,7 @@
         "name": "nicLoop",
         "count": "[parameters('cdcmNumberOfInstances')]"
       },
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]"
       }
@@ -507,7 +492,7 @@
         "name": "nicLoop",
         "count": "[parameters('cdcmNumberOfInstances')]"
       },
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP'))]",
         "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
@@ -539,7 +524,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "copy": {
         "name": "nicLoop",
         "count": "[parameters('cdcmNumberOfInstances')]"
@@ -595,7 +580,7 @@
         {
           "name": "ConfigureVMDSC",
           "type": "extensions",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]"
@@ -623,7 +608,7 @@
         {
           "name": "ConfigureVMPS",
           "type": "extensions",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]",
@@ -648,12 +633,11 @@
         }
       ]
     },
-
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",
       "name": "[variables('cdcmPublicLBIPName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]",
         "dnsSettings": {
