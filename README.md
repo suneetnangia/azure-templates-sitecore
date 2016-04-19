@@ -22,6 +22,9 @@ http://storageexplorer.com/
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
+Once deployed, use the following url to access the Sitecore web portal-
+http://<loadbalancer ip address>/sitecore
+
 Please note this is a work in progress and some of the features in the pipeline are-
 - SQL AlwaysOn
 - MongoDB Cluster
