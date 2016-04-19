@@ -3,15 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sitecoreSetupSecureUri": {
-      "type": "securestring",
-      "defaultValue": "",
+      "type": "securestring",      
       "metadata": {
         "description": "Sitecore secure setup access url."
       }
     },
     "sitecoreLicenseSecureUri": {
-      "type": "securestring",
-      "defaultValue": "",
+      "type": "securestring",      
       "metadata": {
         "description": "Sitecore secure license url."
       }
