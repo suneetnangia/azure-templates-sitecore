@@ -1,14 +1,14 @@
 ﻿param (
-$localZipFilePath = "d:\sitecoresetup.zip",
-$localUnzippedFilePath = "d:\sitecoresetup",
-$localUnzippedDBFilesPath = ("{0}{1}" -f $localUnzippedFilePath,"\Sitecore 8.1 rev. 151207\Databases"),
-$remoteSitecoreFileUrl = "https://setupstore.blob.core.windows.net/setup/Sitecore8.1rev.51207.zip",
-$sqlDataFilesPath = "u:\Sitecore\SQL\Data",
-$sqlLogFilesPath = "l:\Sitecore\SQL\Log",
-$sqlLoginName = "sitecoreUser",
-$sqlPassword = "Pa55w0rd*?",
-$dbUserName = "sitecoreUser",
-$dbRoleName = "db_owner"
+$localZipFilePath,
+$localUnzippedFilePath,
+$localUnzippedDBFilesPath,
+$remoteSitecoreFileUrl,
+$sqlDataFilesPath,
+$sqlLogFilesPath,
+$sqlLoginName,
+$sqlPassword,
+$dbUserName,
+$dbRoleName
 )
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
