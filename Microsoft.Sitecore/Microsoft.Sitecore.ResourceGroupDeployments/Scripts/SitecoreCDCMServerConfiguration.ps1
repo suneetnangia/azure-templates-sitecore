@@ -268,23 +268,27 @@ Function Set-SharedSessionSQLProvider{
 DownloadFile $remoteSitecoreFileUrl $localZipFilePath
 Unzip $localZipFilePath $localUnzippedFilePath
 
+#Get Sitecore setup folder location
+$setupLocalFolderPath = Get-ChildItem $localUnzippedFilePath | ?{ $_.PSIsContainer } | Select-Object FullName 
+$setupLocalFolderPath = $setupLocalFolderPath.FullName
+
 #Download License File
-DownloadFile $remoteLicenseFileUrl "$localUnzippedFilePath\Sitecore 8.1 rev. 151207\Data\License.xml"
+DownloadFile $remoteLicenseFileUrl "$setupLocalFolderPath\Data\License.xml"
 
 #Update connection strings
-Set-ConnectionString ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\ConnectionStrings.config") "core" $coreDBConnectionString
-Set-ConnectionString ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\ConnectionStrings.config") "web" $webDBConnectionString
-Set-ConnectionString ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\ConnectionStrings.config") "master" $masterDBConnectionString
-Set-ConnectionString ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\ConnectionStrings.config") "reporting" $reportingDBConnectionString
-Add-ConnectionString ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\ConnectionStrings.config") "sessions" $sessionsDBConnectionString
+Set-ConnectionString ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\ConnectionStrings.config") "core" $coreDBConnectionString
+Set-ConnectionString ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\ConnectionStrings.config") "web" $webDBConnectionString
+Set-ConnectionString ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\ConnectionStrings.config") "master" $masterDBConnectionString
+Set-ConnectionString ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\ConnectionStrings.config") "reporting" $reportingDBConnectionString
+Add-ConnectionString ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\ConnectionStrings.config") "sessions" $sessionsDBConnectionString
 
 #Enable CMS only mode
-Set-CMSMode ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\Include\Sitecore.Xdb.config") "false"
+Set-CMSMode ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\Include\Sitecore.Xdb.config") "false"
 
 #Configure SQL Private/Shared Session Provider
-Set-PrivateSessionSQLProvider ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\web.config") "sessions"
-Set-SharedSessionSQLProvider ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\App_Config\Include\Sitecore.Analytics.Tracking.config") "sessions"
+Set-PrivateSessionSQLProvider ("{0}\{1}" -f $setupLocalFolderPath, "\Website\web.config") "sessions"
+Set-SharedSessionSQLProvider ("{0}\{1}" -f $setupLocalFolderPath, "\Website\App_Config\Include\Sitecore.Analytics.Tracking.config") "sessions"
 
 #Copy to website directory
-Copy-Item ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Website\*") ("{0}" -f $websitePath) -Recurse -Force
-Copy-Item ("{0}\{1}" -f $localUnzippedFilePath, "Sitecore 8.1 rev. 151207\Data") ("{0}\Data" -f $websitePath) -Recurse -Force
+Copy-Item ("{0}\{1}" -f $setupLocalFolderPath, "\Website\*") ("{0}" -f $websitePath) -Recurse -Force
+Copy-Item ("{0}\{1}" -f $setupLocalFolderPath, "\Data") ("{0}\Data" -f $websitePath) -Recurse -Force

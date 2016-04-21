@@ -245,11 +245,7 @@
     "cdcmWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
     "cdcmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
     "cdcmReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
-    "cdcmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
-    "cdcmCoreConnStrParam": "variables('coreConnStr')",
-    "cdcmWebConnStrParam": "variables('webConnStr')",
-    "cdcmMasterConnStrParam": "variables('masterConnStr')",
-    "cdcmReportingConnStrParam": "variables('reportingConnStr')",
+    "cdcmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",    
     "cdcmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdcmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdcmCoreConnStr'), ' ', variables('cdcmMasterConnStr'), ' ', variables('cdcmWebConnStr'), ' ', variables('cdcmReportingConnStr'), ' ', variables('cdcmSessionsConnStr'))]"
   },
   "resources": [
@@ -445,7 +441,7 @@
                 "[parameters('sqlServerDBConfigScriptUri')]"
               ],
               "commandToExecute": "[variables('sqlServerCustomScriptCommandToExecute')]",
-              "timestamp": 12345711
+              "timestamp": 12345712
             }
           }
         }
@@ -624,7 +620,7 @@
                 "[parameters('cdcmSitecoreConfigScriptUri')]"
               ],
               "commandToExecute": "[variables('cdcmCustomScriptCommandToExecute')]",
-              "timestamp": 400001
+              "timestamp": 400003
             }
           }
         }

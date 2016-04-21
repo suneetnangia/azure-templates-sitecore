@@ -8,7 +8,6 @@
 
     Node $nodeName
     {
-        #TODO: Don't Install All Features.
         WindowsFeature SetupIIS {
             Ensure = "Present"
             Name =    "Web-Server"           

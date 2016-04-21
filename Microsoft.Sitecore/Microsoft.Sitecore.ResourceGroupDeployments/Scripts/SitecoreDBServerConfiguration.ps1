@@ -63,7 +63,7 @@ foreach ($file in Get-ChildItem $sqlDataFilesPath)
 
 		$dbfiles.Add($file.FullName) | Out-Null
 
-		#get database name (TODO: Use Sitecore instance name as prefix for DB name)
+		#get database name
 		$dbname = $file.BaseName
 
 		# get log file, assuming same basename as mdf
