@@ -116,17 +116,17 @@
       "metadata": {
         "description": "SQL Server DB Role Name"
       }
-    },    
+    },
     "sqlServerBootstrapScriptUri": {
       "type": "string",
-      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1",
+      "defaultValue": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreDBServerConfigurationBootstrapper.ps1",
       "metadata": {
         "description": "Powershell bootstrap script url which runs other script(s) under VM local admin account on the SQL Server."
       }
     },
     "sqlServerDBConfigScriptUri": {
       "type": "string",
-      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfiguration.ps1",
+      "defaultValue": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreDBServerConfiguration.ps1",
       "metadata": {
         "description": "Powershell script url which configures Sitecore DB on the server."
       }
@@ -180,7 +180,7 @@
     },
     "cdcmSitecoreConfigScriptUri": {
       "type": "string",
-      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1",
+      "defaultValue": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreCDCMServerConfiguration.ps1",
       "metadata": {
         "description": "Powershell script url which configure Sitecore on the CD CM server."
       }

@@ -36,8 +36,10 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Scripts\Deploy-AzureResourceGroup.ps1" />
+    <None Include="DSC\SitecoreCMCDServerSetup.ps1.zip" />
     <None Include="DSC\SitecoreDBServerSetup.ps1" />
     <None Include="DSC\SitecoreCMCDServerSetup.ps1" />
+    <None Include="DSC\SitecoreDBServerSetup.ps1.zip" />
     <None Include="Scripts\SitecoreCDCMServerConfiguration.ps1" />
     <None Include="Scripts\SitecoreDBServerConfigurationBootstrapper.ps1" />
     <None Include="Scripts\SitecoreDBServerConfiguration.ps1" />

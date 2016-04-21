@@ -30,7 +30,8 @@
 			loadUserProfile = $true
             State  = "Started"
 			DependsOn  = "[WindowsFeature]SetupIIS" 
-       } 
+       }
+		 
        xWebsite DefaultSite
        {
            Ensure          = "Present"
