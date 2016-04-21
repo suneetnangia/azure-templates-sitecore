@@ -140,7 +140,7 @@
     },
     "sqlServerSitecoreDBConfigDSCScriptUri": {
       "type": "string",
-      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreDBServerSetup.ps1.zip",
+      "defaultValue": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreDBServerSetup.ps1.zip",
       "metadata": {
         "description": "Powershell DSC script url which runs on SQL Server."
       }
@@ -194,7 +194,7 @@
     },
     "cdcmSitecoreConfigDSCScriptUri": {
       "type": "string",
-      "defaultValue": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip",
+      "defaultValue": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreCMCDServerSetup.ps1.zip",
       "metadata": {
         "description": "Powershell DSC script to configure CD CM server."
       }
