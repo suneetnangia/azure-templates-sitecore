@@ -3,17 +3,17 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sitecoreSetupSecureUri": {
-      "type": "securestring",      
+      "type": "securestring",
       "metadata": {
         "description": "Sitecore secure setup access url."
       }
     },
     "sitecoreLicenseSecureUri": {
-      "type": "securestring",      
+      "type": "securestring",
       "metadata": {
         "description": "Sitecore secure license url."
       }
-    },  
+    },
     "resourcePrefix": {
       "type": "string",
       "defaultValue": "MSSitecore",
@@ -37,7 +37,7 @@
     },
     "frontendWebSubnetName": {
       "type": "string",
-      "defaultValue": "CDCMSubnet",
+      "defaultValue": "CDSubnet",
       "metadata": {
         "description": "Frontend web subnet name."
       }
@@ -61,6 +61,20 @@
       "defaultValue": "10.0.1.0/24",
       "metadata": {
         "description": "Backend DB subnet prefix"
+      }
+    },
+    "backendWebSubnetName": {
+      "type": "string",
+      "defaultValue": "CMSubnet",
+      "metadata": {
+        "description": "Backend web CM subnet name."
+      }
+    },
+    "backendWebSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.2.0/24",
+      "metadata": {
+        "description": "Backend web CM subnet prefix"
       }
     },
     "sqlServerVMSize": {
@@ -146,14 +160,62 @@
       }
     },
 
-    "cdcmNumberOfInstances": {
+    "cmVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_A3",
+      "allowedValues": [
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A6",
+        "Standard_A7"
+      ],
+      "metadata": {
+        "description": "Allowed/recommended size of the VMs."
+      }
+    },
+    "cmVMAdminUsername": {
+      "type": "string",
+      "defaultValue": "cmvmadmin",
+      "metadata": {
+        "description": "CM VM local admin username."
+      }
+    },
+    "cmVMAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "CM VM local admin password."
+      }
+    },
+    "cmSitecoreConfigScriptUri": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreCDCMServerConfiguration.ps1",
+      "metadata": {
+        "description": "Powershell script url which configure Sitecore on the CM server."
+      }
+    },
+    "cmCustomScriptFileToRun": {
+      "type": "string",
+      "defaultValue": "SitecoreCDCMServerConfiguration.ps1",
+      "metadata": {
+        "description": "Script to configure CM server."
+      }
+    },
+    "cmSitecoreConfigDSCScriptUri": {
+      "type": "string",
+      "defaultValue": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreCMCDServerSetup.ps1.zip",
+      "metadata": {
+        "description": "Powershell DSC script to configure CM server."
+      }
+    },
+
+    "cdNumberOfInstances": {
       "type": "int",
       "defaultValue": 2,
       "metadata": {
         "description": "Number of VMs needed to load balance the traffic to Sitecore CD CM role."
       }
     },
-    "cdcmVMSize": {
+    "cdVMSize": {
       "type": "string",
       "defaultValue": "Standard_A4",
       "allowedValues": [
@@ -165,34 +227,34 @@
         "description": "Allowed/recommended size of the VMs."
       }
     },
-    "cdcmVMAdminUsername": {
+    "cdVMAdminUsername": {
       "type": "string",
-      "defaultValue": "cdcmvmadmin",
+      "defaultValue": "cdvmadmin",
       "metadata": {
         "description": "CM CD VM local admin username."
       }
     },
-    "cdcmVMAdminPassword": {
+    "cdVMAdminPassword": {
       "type": "securestring",
       "metadata": {
         "description": "CM CD VM local admin password."
       }
     },
-    "cdcmSitecoreConfigScriptUri": {
+    "cdSitecoreConfigScriptUri": {
       "type": "string",
       "defaultValue": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreCDCMServerConfiguration.ps1",
       "metadata": {
         "description": "Powershell script url which configure Sitecore on the CD CM server."
       }
     },
-    "cdcmCustomScriptFileToRun": {
+    "cdCustomScriptFileToRun": {
       "type": "string",
       "defaultValue": "SitecoreCDCMServerConfiguration.ps1",
       "metadata": {
         "description": "Script to configure CD CM server."
       }
     },
-    "cdcmSitecoreConfigDSCScriptUri": {
+    "cdSitecoreConfigDSCScriptUri": {
       "type": "string",
       "defaultValue": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreCMCDServerSetup.ps1.zip",
       "metadata": {
@@ -224,29 +286,46 @@
     "sqlServerSetupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "sqlServerCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('sqlServerCustomScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('sqlServerLocalUnzippedDBFilesPath'), ' ', variables('setupSecureUri'), ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('sqlServerVMAdminUsername'), ' ', parameters('sqlServerVMAdminPassword'), ' ', parameters('sqlServerSqlLoginName'), ' ', parameters('sqlServerSqlLoginPassword'), ' ', parameters('sqlServerDbUsername'), ' ', parameters('sqlServerDbRoleName'))]",
 
-    "cdcmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CDCM')]",
-    "cdcmImagePublisher": "MicrosoftWindowsServer",
-    "cdcmImageOffer": "WindowsServer",
-    "cdcmImageSKU": "2012-R2-Datacenter",
-    "cdcmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
-    "cdcmStorageAccountName": "[toLower(concat('CDCM',uniqueString(resourceGroup().id)))]",
-    "cdcmPublicLBIPName": "[concat(variables('cdcmResourcePrefix'),'LBPublicIP')]",
-    "cdcmPublicLBIPDNSName": "[toLower(concat(variables('cdcmResourcePrefix'),'publicLBIPName'))]",
-    "cdcmPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdcmPublicLBIPName'))]",
-    "cdcmPublicLBId": "[resourceId('Microsoft.Network/loadBalancers',variables('cdcmPublicLBName'))]",
-    "cdcmPublicLBName": "[concat(variables('cdcmResourcePrefix'),'LBPublic')]",
-    "cdcmPublicLBFrontEndIPConfigId": "[concat(variables('cdcmPublicLBId'),'/frontendIPConfigurations/LoadBalancerFE')]",
-    "cdcmPublicLBPoolId": "[concat(variables('cdcmPublicLBId'),'/backendAddressPools/BEPool')]",
-    "cdcmPublicLBProbeId": "[concat(variables('cdcmPublicLBId'),'/probes/tcpPort80Probe')]",
-    "cdcmPublicIPAddressType": "Dynamic",
-    "cdcmStorageAccountType": "Standard_LRS",
+    "cmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CM')]",
+    "cmImagePublisher": "MicrosoftWindowsServer",
+    "cmImageOffer": "WindowsServer",
+    "cmImageSKU": "2012-R2-Datacenter",
+    "cmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('backendWebSubnetName'))]",
+    "cmStorageAccountName": "[toLower(concat('CM',uniqueString(resourceGroup().id)))]",
+    "cmPublicIPAddressType": "Dynamic",
+    "cmStorageAccountType": "Standard_LRS",
 
-    "cdcmCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
-    "cdcmWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
-    "cdcmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
-    "cdcmReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
-    "cdcmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",    
-    "cdcmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdcmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdcmCoreConnStr'), ' ', variables('cdcmMasterConnStr'), ' ', variables('cdcmWebConnStr'), ' ', variables('cdcmReportingConnStr'), ' ', variables('cdcmSessionsConnStr'))]"
+    "cmCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
+    "cmWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
+    "cmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
+    "cmReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
+    "cmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
+    "cmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cmCoreConnStr'), ' ', variables('cmMasterConnStr'), ' ', variables('cmWebConnStr'), ' ', variables('cmReportingConnStr'), ' ', variables('cmSessionsConnStr'))]",
+
+
+    "cdResourcePrefix": "[concat(parameters('resourcePrefix'), 'CD')]",
+    "cdImagePublisher": "MicrosoftWindowsServer",
+    "cdImageOffer": "WindowsServer",
+    "cdImageSKU": "2012-R2-Datacenter",
+    "cdSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
+    "cdStorageAccountName": "[toLower(concat('CD',uniqueString(resourceGroup().id)))]",
+    "cdPublicLBIPName": "[concat(variables('cdResourcePrefix'),'LBPublicIP')]",
+    "cdPublicLBIPDNSName": "[toLower(concat(variables('cdResourcePrefix'),'publicLBIPName'))]",
+    "cdPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdPublicLBIPName'))]",
+    "cdPublicLBId": "[resourceId('Microsoft.Network/loadBalancers',variables('cdPublicLBName'))]",
+    "cdPublicLBName": "[concat(variables('cdResourcePrefix'),'LBPublic')]",
+    "cdPublicLBFrontEndIPConfigId": "[concat(variables('cdPublicLBId'),'/frontendIPConfigurations/LoadBalancerFE')]",
+    "cdPublicLBPoolId": "[concat(variables('cdPublicLBId'),'/backendAddressPools/BEPool')]",
+    "cdPublicLBProbeId": "[concat(variables('cdPublicLBId'),'/probes/tcpPort80Probe')]",
+    "cdPublicIPAddressType": "Dynamic",
+    "cdStorageAccountType": "Standard_LRS",
+
+    "cdCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
+    "cdWebConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Web\"')]",
+    "cdMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
+    "cdReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
+    "cdSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
+    "cdCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdCoreConnStr'), ' ', variables('cdMasterConnStr'), ' ', variables('cdWebConnStr'), ' ', variables('cdReportingConnStr'), ' ', variables('cdSessionsConnStr'))]"
   },
   "resources": [
     {
@@ -265,6 +344,12 @@
             "name": "[parameters('frontendWebSubnetName')]",
             "properties": {
               "addressPrefix": "[parameters('frontendWebSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('backendWebSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('backendWebSubnetPrefix')]"
             }
           },
           {
@@ -451,45 +536,36 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
-      "name": "[variables('cdcmStorageAccountName')]",
+      "name": "[variables('cmStorageAccountName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "accountType": "[variables('cdcmStorageAccountType')]"
+        "accountType": "[variables('cmStorageAccountType')]"
       }
     },
     {
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2015-06-15",
-      "name": "[concat(variables('cdcmResourcePrefix'),'AvailabilitySet')]",
+      "name": "[concat(variables('cmResourcePrefix'),'AvailabilitySet')]",
       "location": "[resourceGroup().location]",
       "properties": { }
     },
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",
-      "name": "[concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP')]",
-      "copy": {
-        "name": "nicLoop",
-        "count": "[parameters('cdcmNumberOfInstances')]"
-      },
+      "name": "[concat(variables('cmResourcePrefix'),'PublicIP')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]"
+        "publicIPAllocationMethod": "[variables('cmPublicIPAddressType')]"
       }
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2015-06-15",
-      "name": "[concat(variables('cdcmResourcePrefix'),copyindex(),'NIC')]",
-      "copy": {
-        "name": "nicLoop",
-        "count": "[parameters('cdcmNumberOfInstances')]"
-      },
+      "name": "[concat(variables('cmResourcePrefix'),'NIC')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/loadBalancers/', variables('cdcmPublicLBName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cmResourcePrefix'),'PublicIP'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -498,16 +574,11 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('cdcmResourcePrefix'),copyindex(),'PublicIP'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('cmResourcePrefix'),'PublicIP'))]"
               },
               "subnet": {
-                "id": "[variables('cdcmSubnetRef')]"
-              },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[concat(variables('cdcmPublicLBId'), '/backendAddressPools/BEPool')]"
-                }
-              ]
+                "id": "[variables('cmSubnetRef')]"
+              }
             }
           }
         ]
@@ -516,40 +587,36 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
+      "name": "[concat(variables('cmResourcePrefix'))]",
       "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "nicLoop",
-        "count": "[parameters('cdcmNumberOfInstances')]"
-      },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('cdcmStorageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('cdcmResourcePrefix'),copyindex(),'NIC'))]",
-        "[concat('Microsoft.Compute/availabilitySets/', concat(variables('cdcmResourcePrefix'),'AvailabilitySet'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('cmStorageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('cmResourcePrefix'),'NIC'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', concat(variables('cmResourcePrefix'),'AvailabilitySet'))]"
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('cdcmVMSize')]"
+          "vmSize": "[parameters('cmVMSize')]"
         },
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets',concat(variables('cdcmResourcePrefix'),'AvailabilitySet'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',concat(variables('cmResourcePrefix'),'AvailabilitySet'))]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
-          "adminUsername": "[parameters('cdcmVMAdminUsername')]",
-          "adminPassword": "[parameters('cdcmVMAdminPassword')]"
+          "computerName": "[concat(variables('cmResourcePrefix'))]",
+          "adminUsername": "[parameters('cmVMAdminUsername')]",
+          "adminPassword": "[parameters('cmVMAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[variables('cdcmImagePublisher')]",
-            "offer": "[variables('cdcmImageOffer')]",
-            "sku": "[variables('cdcmImageSKU')]",
+            "publisher": "[variables('cmImagePublisher')]",
+            "offer": "[variables('cmImageOffer')]",
+            "sku": "[variables('cmImageSKU')]",
             "version": "latest"
           },
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://',variables('cdcmStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cdcmResourcePrefix'),copyindex(),'OS.vhd'))]"
+              "uri": "[concat('http://',variables('cmStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cmResourcePrefix'),'OS.vhd'))]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -558,14 +625,14 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('cdcmResourcePrefix'),copyindex(),'NIC'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('cmResourcePrefix'),'NIC'))]"
             }
           ]
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": "true",
-            "storageUri": "[concat('http://',variables('cdcmStorageAccountName'),'.blob.core.windows.net')]"
+            "storageUri": "[concat('http://',variables('cmStorageAccountName'),'.blob.core.windows.net')]"
           }
         }
       },
@@ -576,7 +643,7 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]"
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cmResourcePrefix')))]"
           ],
           "tags": {
             "displayName": "ConfigureVMDSC"
@@ -587,10 +654,10 @@
             "typeHandlerVersion": "2.9",
             "autoUpgradeMinorVersion": false,
             "settings": {
-              "modulesUrl": "[parameters('cdcmSitecoreConfigDSCScriptUri')]",
+              "modulesUrl": "[parameters('cmSitecoreConfigDSCScriptUri')]",
               "configurationFunction": "SitecoreCMCDServerSetup.ps1\\SitecoreCMCDServerSetup",
               "properties": {
-                "nodeName": "[concat(variables('cdcmResourcePrefix'),copyindex())]",
+                "nodeName": "[concat(variables('cmResourcePrefix'))]",
                 "sitecoreAppPoolName": "SitecoreAppPool",
                 "sitecoreWebsiteName": "AzureSitecore"
               }
@@ -604,8 +671,8 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdcmResourcePrefix'),copyindex()))]",
-            "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(variables('cdcmResourcePrefix'),copyindex()), 'ConfigureVMDSC')]"
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cmResourcePrefix')))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(variables('cmResourcePrefix')), 'ConfigureVMDSC')]"
           ],
           "tags": {
             "displayName": "ConfigureVMPS"
@@ -617,9 +684,187 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "[parameters('cdcmSitecoreConfigScriptUri')]"
+                "[parameters('cmSitecoreConfigScriptUri')]"
               ],
-              "commandToExecute": "[variables('cdcmCustomScriptCommandToExecute')]",
+              "commandToExecute": "[variables('cmCustomScriptCommandToExecute')]",
+              "timestamp": 400003
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('cdStorageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "[variables('cdStorageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdResourcePrefix'),'AvailabilitySet')]",
+      "location": "[resourceGroup().location]",
+      "properties": { }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdResourcePrefix'),copyindex(),'PublicIP')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdNumberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('cdPublicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2015-06-15",
+      "name": "[concat(variables('cdResourcePrefix'),copyindex(),'NIC')]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdNumberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cdResourcePrefix'),copyindex(),'PublicIP'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/loadBalancers/', variables('cdPublicLBName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('cdResourcePrefix'),copyindex(),'PublicIP'))]"
+              },
+              "subnet": {
+                "id": "[variables('cdSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(variables('cdPublicLBId'), '/backendAddressPools/BEPool')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(variables('cdResourcePrefix'),copyindex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('cdNumberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('cdStorageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', concat(variables('cdResourcePrefix'),copyindex(),'NIC'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', concat(variables('cdResourcePrefix'),'AvailabilitySet'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('cdVMSize')]"
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',concat(variables('cdResourcePrefix'),'AvailabilitySet'))]"
+        },
+        "osProfile": {
+          "computerName": "[concat(variables('cdResourcePrefix'),copyindex())]",
+          "adminUsername": "[parameters('cdVMAdminUsername')]",
+          "adminPassword": "[parameters('cdVMAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('cdImagePublisher')]",
+            "offer": "[variables('cdImageOffer')]",
+            "sku": "[variables('cdImageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',variables('cdStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cdResourcePrefix'),copyindex(),'OS.vhd'))]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('cdResourcePrefix'),copyindex(),'NIC'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',variables('cdStorageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "ConfigureVMDSC",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdResourcePrefix'),copyindex()))]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMDSC"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": false,
+            "settings": {
+              "modulesUrl": "[parameters('cdSitecoreConfigDSCScriptUri')]",
+              "configurationFunction": "SitecoreCMCDServerSetup.ps1\\SitecoreCMCDServerSetup",
+              "properties": {
+                "nodeName": "[concat(variables('cdResourcePrefix'),copyindex())]",
+                "sitecoreAppPoolName": "SitecoreAppPool",
+                "sitecoreWebsiteName": "AzureSitecore"
+              }
+            },
+            "protectedSettings": { }
+          }
+        },
+        {
+          "name": "ConfigureVMPS",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', concat(variables('cdResourcePrefix'),copyindex()))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(variables('cdResourcePrefix'),copyindex()), 'ConfigureVMDSC')]"
+          ],
+          "tags": {
+            "displayName": "ConfigureVMPS"
+          },
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[parameters('cdSitecoreConfigScriptUri')]"
+              ],
+              "commandToExecute": "[variables('cdCustomScriptCommandToExecute')]",
               "timestamp": 400003
             }
           }
@@ -629,22 +874,22 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",
-      "name": "[variables('cdcmPublicLBIPName')]",
+      "name": "[variables('cdPublicLBIPName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "publicIPAllocationMethod": "[variables('cdcmPublicIPAddressType')]",
+        "publicIPAllocationMethod": "[variables('cdPublicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[variables('cdcmPublicLBIPDNSName')]"
+          "domainNameLabel": "[variables('cdPublicLBIPDNSName')]"
         }
       }
     },
     {
       "apiVersion": "2015-05-01-preview",
-      "name": "[variables('cdcmPublicLBName')]",
+      "name": "[variables('cdPublicLBName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('cdcmPublicLBIPName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('cdPublicLBIPName'))]"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -652,7 +897,7 @@
             "name": "LoadBalancerFE",
             "properties": {
               "publicIPAddress": {
-                "id": "[variables('cdcmPublicLBIPId')]"
+                "id": "[variables('cdPublicLBIPId')]"
               }
             }
           }
@@ -667,10 +912,10 @@
             "name": "Http80",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[variables('cdcmPublicLBFrontEndIPConfigId')]"
+                "id": "[variables('cdPublicLBFrontEndIPConfigId')]"
               },
               "backendAddressPool": {
-                "id": "[variables('cdcmPublicLBPoolId')]"
+                "id": "[variables('cdPublicLBPoolId')]"
               },
               "protocol": "tcp",
               "frontendPort": 80,
@@ -678,7 +923,7 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
               "probe": {
-                "id": "[variables('cdcmPublicLBProbeId')]"
+                "id": "[variables('cdPublicLBProbeId')]"
               }
             }
           }

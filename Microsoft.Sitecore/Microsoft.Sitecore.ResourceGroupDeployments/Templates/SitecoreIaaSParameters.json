@@ -8,7 +8,7 @@
     },
     "sitecoreLicenseSecureUri": {
       "value": ""
-    },   
+    },
     "virtualNetworkName": {
       "value": "SitecoreIaaSNet"
     },
@@ -16,7 +16,7 @@
       "value": "10.0.0.0/8"
     },
     "frontendWebSubnetName": {
-      "value": "CDCMSubnet"
+      "value": "CDSubnet"
     },
     "frontendWebSubnetPrefix": {
       "value": "10.0.0.0/24"
@@ -27,8 +27,14 @@
     "backendDBSubnetPrefix": {
       "value": "10.0.1.0/24"
     },
+    "backendWebSubnetName": {
+      "value": "CMSubnet"
+    },
+    "backendWebSubnetPrefix": {
+      "value": "10.0.2.0/24"
+    },
     "resourcePrefix": {
-      "value": "Sitecore"
+      "value": "MSBupaSC"
     },
 
     // SQL Server Parameters
@@ -52,7 +58,7 @@
     },
     "sqlServerDbRoleName": {
       "value": "db_owner"
-    },    
+    },
     "sqlServerBootstrapScriptUri": {
       "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1"
     },
@@ -66,27 +72,46 @@
       "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreDBServerSetup.ps1.zip"
     },
 
-    // CD CM Server Parameters
-    "cdcmNumberOfInstances": {
-      "value": 2
-    },
-    "cdcmVMSize": {
+    // CM Server Paramters
+    "cmVMSize": {
       "value": "Standard_A4"
     },
-    "cdcmVMAdminUsername": {
-      "value": "cdcmvmadmin"
+    "cmVMAdminUsername": {
+      "value": "cmvmadmin"
     },
-    "cdcmVMAdminPassword": {
+    "cmVMAdminPassword": {
       "value": "Pa55w0rd*?"
     },
-
-    "cdcmSitecoreConfigScriptUri": {
+    "cmSitecoreConfigScriptUri": {
       "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1"
     },
-    "cdcmCustomScriptFileToRun": {
+    "cmCustomScriptFileToRun": {
       "value": "SitecoreCDCMServerConfiguration.ps1"
     },
-    "cdcmSitecoreConfigDSCScriptUri": {
+    "cmSitecoreConfigDSCScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip"
+    },
+
+    // CD Server Parameters
+    "cdNumberOfInstances": {
+      "value": 2
+    },
+    "cdVMSize": {
+      "value": "Standard_A4"
+    },
+    "cdVMAdminUsername": {
+      "value": "cdvmadmin"
+    },
+    "cdVMAdminPassword": {
+      "value": "Pa55w0rd*?"
+    },
+    "cdSitecoreConfigScriptUri": {
+      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1"
+    },
+    "cdCustomScriptFileToRun": {
+      "value": "SitecoreCDCMServerConfiguration.ps1"
+    },
+    "cdSitecoreConfigDSCScriptUri": {
       "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip"
     }
   }

@@ -1,6 +1,6 @@
 ﻿Param(
     [string] $ResourceGroupLocation = 'East US',
-    [string] $ResourceGroupName = 'SitecoreIaaSv5',
+    [string] $ResourceGroupName = 'SitecoreIaaSv8',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageAccountResourceGroupName, 
