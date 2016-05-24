@@ -30,7 +30,6 @@ http://[loadbalancer ip address]/sitecore
 Please note this is a work in progress and some of the features in the pipeline are-
 - SQL AlwaysOn
 - MongoDB Cluster
-- Content Delivery/Management Role Split
 - Better Network/Security Design
 
 MICROSOFT MAKES NO WARRANTIES, EXPRESS, IMPLIED, OR STATUTORY, BY POSTING SUCH DOCUMENTS OR ABOUT THE INFORMATION IN SUCH DOCUMENTS.
