@@ -4,10 +4,10 @@ Azure template(s) for Sitecore on Azure.
 This template will deploy Sitecore 8.1 in CMS only mode.
 
 Following resources are created by the template-
-- A virtual network with two subnets.
-- Content delivery and management roles on two(configurable) VMs.
+- A virtual network with three subnets.
+- Content delivery on two(configurable) VMs and content management on one VM.
 - A SQL Server on a VM.
-- A load balancer for content delivery and management roles.
+- A load balancer for content delivery roles.
 
 The template will download and deploy Sitecore 8.1 from the user provided URLs.
 
