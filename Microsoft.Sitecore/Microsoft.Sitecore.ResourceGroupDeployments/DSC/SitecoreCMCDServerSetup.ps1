@@ -5,30 +5,45 @@
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion "1.2.0"
     Import-DscResource –ModuleName 'PSDesiredStateConfiguration'
     Import-DscResource -ModuleName xWebAdministration -ModuleVersion "1.10.0.0"
+	Import-DscResource -ModuleName xComputerManagement -ModuleVersion "1.10.0.0"
+	Import-DscResource -ModuleName cWSUS -ModuleVersion "1.10.0.0"
 
     Node $nodeName
     {
+		cWSUSUpdateMode WSUSMode {
+            Mode = "Notify"
+        }
+
         WindowsFeature SetupIIS {
             Ensure = "Present"
-            Name =    "Web-Server"           
+            Name = "Web-Server"           
         }
+
+		WindowsFeature IISManagementTools {
+			Ensure = "Present" 
+			Name = "Web-Mgmt-Tools" 
+			IncludeAllSubFeature = $false
+			DependsOn  = "[WindowsFeature]SetupIIS"
+		}
 
         WindowsFeature AspNet45 
         { 
-            Ensure          = "Present" 
+            Ensure          = "Present"
             Name            = "Web-Asp-Net45" 
         } 
 
        xWebAppPool SitecoreAppPool 
        {
-           Name  = $sitecoreAppPoolName
-           Ensure = "Present"
-		    managedPipelineMode = "Integrated"
+			Name  = $sitecoreAppPoolName
+			Ensure = "Present"
+			managedPipelineMode = "Integrated"
 			managedRuntimeVersion = "v4.0"
 			maxProcesses = 1
 			identityType = "ApplicationPoolIdentity"
 			loadUserProfile = $true
-            State  = "Started"
+			State  = "Started"
+			startMode = "AlwaysRunning"
+			idleTimeout = 0
 			DependsOn  = "[WindowsFeature]SetupIIS" 
        }
 		 
@@ -64,8 +79,15 @@
             )
             DependsOn = '[File]CreateDirectory'
         }
+
+		Group UserGroup{
+		  GroupName = "Performance Monitor Users"
+		  Ensure = "Present"
+		  MembersToInclude = "IIS AppPool\$sitecoreAppPoolName"
+		  DependsOn = '[xWebAppPool]SitecoreAppPool'
+		}
         
-		xWebsite NewWebSite  
+		xWebsite SitecoreWebSite  
         { 
             Ensure          = "Present" 
 			ApplicationPool = $sitecoreAppPoolName

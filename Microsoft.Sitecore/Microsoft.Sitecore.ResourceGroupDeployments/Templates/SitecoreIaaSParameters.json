@@ -39,7 +39,7 @@
 
     // SQL Server Parameters
     "sqlServerVMSize": {
-      "value": "Standard_DS4"
+      "value": "Standard_DS3_v2"
     },
     "sqlServerVMAdminUserName": {
       "value": "dbvmadmin"
@@ -74,7 +74,7 @@
 
     // CM Server Paramters
     "cmVMSize": {
-      "value": "Standard_A4"
+      "value": "Standard_DS3_v2"
     },
     "cmVMAdminUsername": {
       "value": "cmvmadmin"
@@ -97,7 +97,7 @@
       "value": 2
     },
     "cdVMSize": {
-      "value": "Standard_A4"
+      "value": "Standard_DS3_v2"
     },
     "cdVMAdminUsername": {
       "value": "cdvmadmin"
