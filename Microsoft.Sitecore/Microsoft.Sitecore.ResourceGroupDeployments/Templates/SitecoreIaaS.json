@@ -637,7 +637,7 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": "true",
+            "enabled": "false",
             "storageUri": "[concat('http://',variables('cmStorageAccountName'),'.blob.core.windows.net')]"
           }
         }
@@ -815,7 +815,7 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": "true",
+            "enabled": "false",
             "storageUri": "[concat('http://',variables('cdStorageAccountName'),'.blob.core.windows.net')]"
           }
         }
