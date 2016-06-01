@@ -297,7 +297,7 @@
     "cmImageOffer": "WindowsServer",
     "cmImageSKU": "2012-R2-Datacenter",
     "cmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('backendWebSubnetName'))]",
-    "cmStorageAccountName": "[toLower(concat('CM',uniqueString(resourceGroup().id)))]",
+    "cmStorageAccountName": "[toLower(concat('CMB',uniqueString(resourceGroup().id)))]",
     "cmPublicIPAddressType": "Dynamic",
     "cmStorageAccountType": "Premium_LRS",
 
@@ -314,7 +314,7 @@
     "cdImageOffer": "WindowsServer",
     "cdImageSKU": "2012-R2-Datacenter",
     "cdSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
-    "cdStorageAccountName": "[toLower(concat('CD',uniqueString(resourceGroup().id)))]",
+    "cdStorageAccountName": "[toLower(concat('CDB',uniqueString(resourceGroup().id)))]",
     "cdPublicLBIPName": "[concat(variables('cdResourcePrefix'),'LBPublicIP')]",
     "cdPublicLBIPDNSName": "[toLower(concat(variables('cdResourcePrefix'),'publicLBIPName'))]",
     "cdPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdPublicLBIPName'))]",
