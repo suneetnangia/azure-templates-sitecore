@@ -1,4 +1,4 @@
-﻿{
+﻿ {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -83,7 +83,7 @@
       "allowedValues": [
         "Standard_DS3",
         "Standard_DS3_v2",
-                "Standard_DS4_v2",
+        "Standard_DS4_v2",
         "Standard_DS4",
         "Standard_DS12",
         "Standard_DS13",
@@ -167,7 +167,7 @@
       "defaultValue": "Standard_DS3_v2",
       "allowedValues": [
         "Standard_DS3_v2",
-                "Standard_DS4_v2",
+        "Standard_DS4_v2",
         "Standard_A3",
         "Standard_A4",
         "Standard_A6",
@@ -224,7 +224,7 @@
       "defaultValue": "Standard_DS3_v2",
       "allowedValues": [
         "Standard_DS3_v2",
-                "Standard_DS4_v2",
+        "Standard_DS4_v2",
         "Standard_A4",
         "Standard_A6",
         "Standard_A7"
@@ -282,7 +282,7 @@
     "sqlServerDataDisk1VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk1.vhd')]",
     "sqlServerDataDisk2VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk2.vhd')]",
     "sqlServerSubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('backendDBSubnetName'))]",
-    "sqlServerSizeOfEachDataDiskInGB": 128, //P10
+    "sqlServerSizeOfEachDataDiskInGB": 1024, //P10
     "sqlServerStorageAccountType": "Premium_LRS",
     "sqlServerPublicIPName": "[concat(variables('sqlServerResourcePrefix'),'PublicIP')]",
     "sqlServerPublicIPAddressType": "Dynamic",
@@ -624,6 +624,7 @@
             "vhd": {
               "uri": "[concat('http://',variables('cmStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cmResourcePrefix'),'OS.vhd'))]"
             },
+            "diskSizeGB": "1024",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -802,6 +803,7 @@
             "vhd": {
               "uri": "[concat('http://',variables('cdStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cdResourcePrefix'),copyindex(),'OS.vhd'))]"
             },
+            "diskSizeGB": "1024",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
