@@ -282,7 +282,7 @@
     "sqlServerDataDisk1VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk1.vhd')]",
     "sqlServerDataDisk2VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk2.vhd')]",
     "sqlServerSubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('backendDBSubnetName'))]",
-    "sqlServerSizeOfEachDataDiskInGB": 1024, //P10
+    "sqlServerSizeOfEachDataDiskInGB": 1023, //P10
     "sqlServerStorageAccountType": "Premium_LRS",
     "sqlServerPublicIPName": "[concat(variables('sqlServerResourcePrefix'),'PublicIP')]",
     "sqlServerPublicIPAddressType": "Dynamic",
@@ -624,7 +624,7 @@
             "vhd": {
               "uri": "[concat('http://',variables('cmStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cmResourcePrefix'),'OS.vhd'))]"
             },
-            "diskSizeGB": "1024",
+            "diskSizeGB": "1023",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -803,7 +803,7 @@
             "vhd": {
               "uri": "[concat('http://',variables('cdStorageAccountName'),'.blob.core.windows.net/vhds/', concat(variables('cdResourcePrefix'),copyindex(),'OS.vhd'))]"
             },
-            "diskSizeGB": "1024",
+            "diskSizeGB": "1023",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
