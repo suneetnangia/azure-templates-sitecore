@@ -297,6 +297,8 @@
     "sqlServerSetupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "sqlServerCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('sqlServerCustomScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('sqlServerLocalUnzippedDBFilesPath'), ' ', variables('setupSecureUri'), ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('sqlServerVMAdminUsername'), ' ', parameters('sqlServerVMAdminPassword'), ' ', parameters('sqlServerSqlLoginName'), ' ', parameters('sqlServerSqlLoginPassword'), ' ', parameters('sqlServerDbUsername'), ' ', parameters('sqlServerDbRoleName'))]",
 
+    "sqlNSGName": "[concat(variables('sqlServerResourcePrefix'),'NSG')]",
+
     "cmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CM')]",
     "cmImagePublisher": "MicrosoftWindowsServer",
     "cmImageOffer": "WindowsServer",
@@ -313,6 +315,7 @@
     "cmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
     "cmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cmCoreConnStr'), ' ', variables('cmMasterConnStr'), ' ', variables('cmWebConnStr'), ' ', variables('cmReportingConnStr'), ' ', variables('cmSessionsConnStr'))]",
 
+    "cmNSGName": "[concat(variables('cmResourcePrefix'),'NSG')]",
 
     "cdResourcePrefix": "[concat(parameters('resourcePrefix'), 'CD')]",
     "cdImagePublisher": "MicrosoftWindowsServer",
@@ -344,9 +347,150 @@
   "resources": [
     {
       "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('cdNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG CD Role"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "InboundRDPRule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "InboundHttpWebRule",
+            "properties": {
+              "description": "Allow Web",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('cmNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG CM Role"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "InboundRDPRule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "InboundHttpWebRule",
+            "properties": {
+              "description": "Allow Web",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('backendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('sqlNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG DB Role"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "InboundRDPRule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "InboundCDSQLTCPRule",
+            "properties": {
+              "description": "Allow SQL Connections",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "destinationAddressPrefix": "[parameters('backendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "InboundCMSQLTCPRule",
+            "properties": {
+              "description": "Allow SQL Connections",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "[parameters('backendWebSubnetPrefix')]",
+              "destinationAddressPrefix": "[parameters('backendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[parameters('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('cdNSGName'))]"
+      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -366,13 +510,19 @@
           {
             "name": "[parameters('backendWebSubnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('backendWebSubnetPrefix')]"
+              "addressPrefix": "[parameters('backendWebSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('cmNSGName'))]"
+              }
             }
           },
           {
             "name": "[parameters('backendDBSubnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('backendDBSubnetPrefix')]"
+              "addressPrefix": "[parameters('backendDBSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('sqlNSGName'))]"
+              }
             }
           }
         ]
@@ -961,48 +1111,6 @@
           }
         ]
       }
-    },
-
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('cdNSGName')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "NSG CD Role"
-      },
-      "properties": {
-        "securityRules": [
-          {
-            "name": "InboundRDPRule",
-            "properties": {
-              "description": "Allow RDP",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3389",
-              "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "InboundHttpWebRule",
-            "properties": {
-              "description": "Allow Web",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
-              "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
-              "access": "Allow",
-              "priority": 101,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
-    },
+    }
   ]
 }
