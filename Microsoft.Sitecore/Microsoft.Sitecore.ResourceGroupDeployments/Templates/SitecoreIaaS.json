@@ -336,7 +336,10 @@
     "cdMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
     "cdReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
     "cdSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
-    "cdCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdCoreConnStr'), ' ', variables('cdMasterConnStr'), ' ', variables('cdWebConnStr'), ' ', variables('cdReportingConnStr'), ' ', variables('cdSessionsConnStr'))]"
+    "cdCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdCoreConnStr'), ' ', variables('cdMasterConnStr'), ' ', variables('cdWebConnStr'), ' ', variables('cdReportingConnStr'), ' ', variables('cdSessionsConnStr'))]",
+
+    "cdNSGName": "[concat(variables('cdResourcePrefix'),'NSG')]"
+
   },
   "resources": [
     {
@@ -354,7 +357,10 @@
           {
             "name": "[parameters('frontendWebSubnetName')]",
             "properties": {
-              "addressPrefix": "[parameters('frontendWebSubnetPrefix')]"
+              "addressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('cdNSGName'))]"
+              }
             }
           },
           {
@@ -706,6 +712,7 @@
         }
       ]
     },
+
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2015-06-15",
@@ -954,6 +961,48 @@
           }
         ]
       }
-    }
+    },
+
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('cdNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG CD Role"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "InboundRDPRule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "InboundHttpWebRule",
+            "properties": {
+              "description": "Allow Web",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
   ]
 }
