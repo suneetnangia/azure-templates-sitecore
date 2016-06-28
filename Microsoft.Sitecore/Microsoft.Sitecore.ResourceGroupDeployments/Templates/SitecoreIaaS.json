@@ -287,7 +287,7 @@
     "sqlServerDataDisk1VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk1.vhd')]",
     "sqlServerDataDisk2VhdName": "[concat('http://',variables('sqlServerStorageAccountName'),'.blob.core.windows.net/vhds','/',variables('sqlServerResourcePrefix'),'DataDisk2.vhd')]",
     "sqlServerSubnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('backendDBSubnetName'))]",
-    "sqlServerSizeOfEachDataDiskInGB": 1023, //P10
+    "sqlServerSizeOfEachDataDiskInGB": 1023,
     "sqlServerStorageAccountType": "Premium_LRS",
     "sqlServerPublicIPName": "[concat(variables('sqlServerResourcePrefix'),'PublicIP')]",
     "sqlServerPublicIPAddressType": "Dynamic",
