@@ -821,7 +821,7 @@
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "typeHandlerVersion": "2.9",
-            "autoUpgradeMinorVersion": false,
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "modulesUrl": "[parameters('cmSitecoreConfigDSCScriptUri')]",
               "configurationFunction": "SitecoreCMCDServerSetup.ps1\\SitecoreCMCDServerSetup",
@@ -1001,7 +1001,7 @@
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "typeHandlerVersion": "2.9",
-            "autoUpgradeMinorVersion": false,
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "modulesUrl": "[parameters('cdSitecoreConfigDSCScriptUri')]",
               "configurationFunction": "SitecoreCMCDServerSetup.ps1\\SitecoreCMCDServerSetup",
