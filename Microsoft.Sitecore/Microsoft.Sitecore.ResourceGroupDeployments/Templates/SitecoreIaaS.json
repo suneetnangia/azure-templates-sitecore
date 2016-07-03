@@ -126,10 +126,10 @@
       "type": "array",
       "defaultValue": [
         {
-          "IpAddress": "10.0.0.4"
+          "IpAddress": "10.0.1.4"
         },
         {
-          "IpAddress": "10.0.0.5"
+          "IpAddress": "10.0.1.5"
         }
       ],
       "metadata": {
