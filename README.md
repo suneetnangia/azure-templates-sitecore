@@ -20,6 +20,10 @@ User will need to provide the following two URLs-
 To learn about creating secure SAS urls please see the video tutorial here (@ 2:40)-
 http://storageexplorer.com/
 
+**Machine Key**
+
+Please note this template uses a static predetermined machine key for the ease of deployment/demo purposes only. When deploying this in the enterprise scenarios please regerate the key using the powershell here- https://support.microsoft.com/en-gb/kb/2915218
+
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsuneetnangia%2Fazure-templates-sitecore%2Fmaster%2FMicrosoft.Sitecore%2FMicrosoft.Sitecore.ResourceGroupDeployments%2FTemplates%2FSitecoreIaaS.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
