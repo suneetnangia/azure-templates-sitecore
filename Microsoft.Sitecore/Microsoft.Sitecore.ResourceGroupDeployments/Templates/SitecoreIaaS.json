@@ -242,7 +242,7 @@
       }
     },
     "macDecryptionKey": {
-      "type": "securestring",
+      "type": "string",
       "defaultValue": "470D1F481C6389C358F1E08C3DFADDDC4AF2A498597FF894EA40A6D488EDAB0D",
       "metadata": {
         "description": "MAC decryption key."
@@ -256,7 +256,7 @@
       }
     },
     "macValidationKey": {
-      "type": "securestring",
+      "type": "string",
       "defaultValue": "D451149B2BAC52F48B2CB88160D4189EFEAE7FEC2A83818C19F0D521412C498856498DAC52DB58B28A86A31FE024A6EEC37C720AD261372C80059D09F06C3FD4",
       "metadata": {
         "description": "MAC validation key."
