@@ -44,7 +44,7 @@
     },
     "frontendWebAGSubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.0.0.0/24",
+      "defaultValue": "10.0.3.0/24",
       "metadata": {
         "description": "Frontend web subnet prefix."
       }
