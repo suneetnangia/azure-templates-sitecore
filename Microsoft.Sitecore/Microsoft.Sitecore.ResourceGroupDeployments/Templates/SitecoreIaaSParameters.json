@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -15,26 +15,51 @@
     "virtualNetworkAddressPrefix": {
       "value": "10.0.0.0/8"
     },
+    "frontendWebAGSubnetName": {
+      "value": "FEAGSubnet"
+    },
+    "frontendWebAGSubnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
     "frontendWebSubnetName": {
       "value": "CDSubnet"
     },
     "frontendWebSubnetPrefix": {
-      "value": "10.0.0.0/24"
+      "value": "10.0.1.0/24"
     },
     "backendDBSubnetName": {
       "value": "DBSubnet"
     },
     "backendDBSubnetPrefix": {
-      "value": "10.0.1.0/24"
+      "value": "10.0.2.0/24"
     },
     "backendWebSubnetName": {
       "value": "CMSubnet"
     },
     "backendWebSubnetPrefix": {
-      "value": "10.0.2.0/24"
+      "value": "10.0.3.0/24"
     },
     "resourcePrefix": {
-      "value": "MSBupaSC"
+      "value": "MSB"
+    },
+    "frontendWebAGSize": {
+      "value": "Standard_Medium"
+    },
+    "frontendWebAGInstanceCount": {
+      "value": 2
+    },
+    "frontendWebAGCookieBasedAffinity": {
+      "value": "Enabled"
+    },
+    "backendIPAddresses": {
+      "value": [
+        {
+          "IpAddress": "10.0.1.4"
+        },
+        {
+          "IpAddress": "10.0.1.5"
+        }
+      ]
     },
 
     // SQL Server Parameters
@@ -60,16 +85,30 @@
       "value": "db_owner"
     },
     "sqlServerBootstrapScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfigurationBootstrapper.ps1"
+      "value": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreDBServerConfigurationBootstrapper.ps1"
     },
     "sqlServerDBConfigScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreDBServerConfiguration.ps1"
+      "value": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreDBServerConfiguration.ps1"
     },
     "sqlServerCustomScriptFileToRun": {
       "value": "SitecoreDBServerConfigurationBootstrapper.ps1"
     },
     "sqlServerSitecoreDBConfigDSCScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreDBServerSetup.ps1.zip"
+      "value": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreDBServerSetup.ps1.zip"
+    },
+
+    // ASP.net Viewstate MAC Key
+    "macDecryption": {
+      "value": "AES"
+    },
+    "macDecryptionKey": {
+      "value": "470D1F481C6389C358F1E08C3DFADDDC4AF2A498597FF894EA40A6D488EDAB0D"
+    },
+    "macValidation": {
+      "value": "HMACSHA256"
+    },
+    "macValidationKey": {
+      "value": "D451149B2BAC52F48B2CB88160D4189EFEAE7FEC2A83818C19F0D521412C498856498DAC52DB58B28A86A31FE024A6EEC37C720AD261372C80059D09F06C3FD4"
     },
 
     // CM Server Paramters
@@ -83,13 +122,13 @@
       "value": "Pa55w0rd*?"
     },
     "cmSitecoreConfigScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1"
+      "value": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreCDCMServerConfiguration.ps1"
     },
     "cmCustomScriptFileToRun": {
       "value": "SitecoreCDCMServerConfiguration.ps1"
     },
     "cmSitecoreConfigDSCScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip"
+      "value": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreCMCDServerSetup.ps1.zip"
     },
 
     // CD Server Parameters
@@ -106,13 +145,13 @@
       "value": "Pa55w0rd*?"
     },
     "cdSitecoreConfigScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psscripts/SitecoreCDCMServerConfiguration.ps1"
+      "value": "https://raw.githubusercontent.com/suneetnangia/azure-templates-sitecore/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/Scripts/SitecoreCDCMServerConfiguration.ps1"
     },
     "cdCustomScriptFileToRun": {
       "value": "SitecoreCDCMServerConfiguration.ps1"
     },
     "cdSitecoreConfigDSCScriptUri": {
-      "value": "https://sitecorepublicrepo.blob.core.windows.net/psdscscripts/SitecoreCMCDServerSetup.ps1.zip"
+      "value": "https://github.com/suneetnangia/azure-templates-sitecore/raw/master/Microsoft.Sitecore/Microsoft.Sitecore.ResourceGroupDeployments/DSC/SitecoreCMCDServerSetup.ps1.zip"
     }
   }
 }
