@@ -8,6 +8,7 @@ Following resources are created by the template-
 - Content delivery on two(configurable) VMs and content management on one VM.
 - A SQL Server on a VM.
 - A load balancer for content delivery roles.
+- Application Gateway with cookie affinity.
 
 The template will download and deploy Sitecore 8.1 from the user provided URLs.
 
