@@ -1,4 +1,4 @@
-﻿ {
+{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -33,6 +33,20 @@
       "defaultValue": "10.0.0.0/8",
       "metadata": {
         "description": "Virtual network address space prefix."
+      }
+    },
+    "frontendWebAGSubnetName": {
+      "type": "string",
+      "defaultValue": "FEAGSubnet",
+      "metadata": {
+        "description": "Frontend web subnet name."
+      }
+    },
+    "frontendWebAGSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Frontend web subnet prefix."
       }
     },
     "frontendWebSubnetName": {
@@ -77,18 +91,75 @@
         "description": "Backend web CM subnet prefix"
       }
     },
+    "frontendWebAGSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_Small",
+        "Standard_Medium",
+        "Standard_Large"
+      ],
+      "defaultValue": "Standard_Medium",
+      "metadata": {
+        "description": "Application gateway size for the frontend web servers."
+      }
+    },
+    "frontendWebAGInstanceCount": {
+      "type": "int",
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Application gateway instance count for the frontend web servers."
+      }
+    },
+    "backendIPAddresses": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "IpAddress": "10.0.0.4"
+        },
+        {
+          "IpAddress": "10.0.0.5"
+        }
+      ],
+      "metadata": {
+        "description": "back end pool ip addresses"
+      }
+    },
+    "frontendWebAGCookieBasedAffinity": {
+      "type": "string",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Cookie based affinity for the frontend application gateway."
+      }
+    },
+
     "sqlServerVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS3_v2",
+      "defaultValue": "Standard_DS5_v2",
       "allowedValues": [
+        "Standard_DS2",
         "Standard_DS3",
         "Standard_DS4",
+        "Standard_DS5",
+        "Standard_DS2_v2",
         "Standard_DS3_v2",
         "Standard_DS4_v2",
-        "Standard_DS4",
-        "Standard_DS12",
-        "Standard_DS13",
-        "Standard_DS14"
+        "Standard_DS5_v2"
       ],
       "metadata": {
         "description": "Size of the SQL Server VM"
@@ -163,18 +234,47 @@
       }
     },
 
+    "macDecryption": {
+      "type": "string",
+      "defaultValue": "AES",
+      "metadata": {
+        "description": "MAC decryption algorithm."
+      }
+    },
+    "macDecryptionKey": {
+      "type": "securestring",
+      "defaultValue": "470D1F481C6389C358F1E08C3DFADDDC4AF2A498597FF894EA40A6D488EDAB0D",
+      "metadata": {
+        "description": "MAC decryption key."
+      }
+    },
+    "macValidation": {
+      "type": "string",
+      "defaultValue": "HMACSHA256",
+      "metadata": {
+        "description": "MAC validation algorithm."
+      }
+    },
+    "macValidationKey": {
+      "type": "securestring",
+      "defaultValue": "D451149B2BAC52F48B2CB88160D4189EFEAE7FEC2A83818C19F0D521412C498856498DAC52DB58B28A86A31FE024A6EEC37C720AD261372C80059D09F06C3FD4",
+      "metadata": {
+        "description": "MAC validation key."
+      }
+    },
+
     "cmVMSize": {
       "type": "string",
-      "defaultValue": "Standard_DS3_v2",
+      "defaultValue": "Standard_DS2_v2",
       "allowedValues": [
+        "Standard_DS2",
         "Standard_DS3",
         "Standard_DS4",
+        "Standard_DS5",
+        "Standard_DS2_v2",
         "Standard_DS3_v2",
         "Standard_DS4_v2",
-        "Standard_A3",
-        "Standard_A4",
-        "Standard_A6",
-        "Standard_A7"
+        "Standard_DS5_v2"
       ],
       "metadata": {
         "description": "Allowed/recommended size of the VMs."
@@ -226,13 +326,14 @@
       "type": "string",
       "defaultValue": "Standard_DS3_v2",
       "allowedValues": [
+        "Standard_DS2",
         "Standard_DS3",
         "Standard_DS4",
+        "Standard_DS5",
+        "Standard_DS2_v2",
         "Standard_DS3_v2",
         "Standard_DS4_v2",
-        "Standard_A4",
-        "Standard_A6",
-        "Standard_A7"
+        "Standard_DS5_v2"
       ],
       "metadata": {
         "description": "Allowed/recommended size of the VMs."
@@ -297,6 +398,15 @@
     "sqlServerSetupSecureUri": "[concat('\"',parameters('sitecoreSetupSecureUri'), '\"')]",
     "sqlServerCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('sqlServerCustomScriptFileToRun'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', variables('sqlServerLocalUnzippedDBFilesPath'), ' ', variables('setupSecureUri'), ' ', 'U:\\Sitecore\\SQL\\Data', ' ', 'L:\\Sitecore\\SQL\\Log', ' ', parameters('sqlServerVMAdminUsername'), ' ', parameters('sqlServerVMAdminPassword'), ' ', parameters('sqlServerSqlLoginName'), ' ', parameters('sqlServerSqlLoginPassword'), ' ', parameters('sqlServerDbUsername'), ' ', parameters('sqlServerDbRoleName'))]",
 
+    "frontendWebAGPrefix": "[concat(parameters('resourcePrefix'), 'FEAG')]",
+    "frontendWebAGSubnetRef": "[concat(variables('VnetId'),'/subnets/', parameters('frontendWebAGSubnetName'))]",
+    "frontendWebAGId": "[resourceId('Microsoft.Network/applicationGateways',variables('frontendWebAGPrefix'))]",
+    "frontendWebAGIPName": "[concat(variables('frontendWebAGPrefix'),'WebAGPublicIP')]",
+    "frontendWebAGIPDNSName": "[toLower(concat(variables('frontendWebAGPrefix'),'WebAGIPName'))]",
+    "frontendWebAGIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('frontendWebAGIPName'))]",
+    "frontendWebAGIPRef": "[resourceId('Microsoft.Network/publicIPAddresses',variables('frontendWebAGPrefix'))]",
+    "frontendWebAGIPAddressType": "Dynamic",
+
     "sqlNSGName": "[concat(variables('sqlServerResourcePrefix'),'NSG')]",
 
     "cmResourcePrefix": "[concat(parameters('resourcePrefix'), 'CM')]",
@@ -304,7 +414,7 @@
     "cmImageOffer": "WindowsServer",
     "cmImageSKU": "2012-R2-Datacenter",
     "cmSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('backendWebSubnetName'))]",
-    "cmStorageAccountName": "[toLower(concat('CMB',uniqueString(resourceGroup().id)))]",
+    "cmStorageAccountName": "[toLower(concat('CM',uniqueString(resourceGroup().id)))]",
     "cmPublicIPAddressType": "Dynamic",
     "cmStorageAccountType": "Premium_LRS",
 
@@ -313,7 +423,7 @@
     "cmMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
     "cmReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
     "cmSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
-    "cmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cmCoreConnStr'), ' ', variables('cmMasterConnStr'), ' ', variables('cmWebConnStr'), ' ', variables('cmReportingConnStr'), ' ', variables('cmSessionsConnStr'))]",
+    "cmCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cmCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cmCoreConnStr'), ' ', variables('cmMasterConnStr'), ' ', variables('cmWebConnStr'), ' ', variables('cmReportingConnStr'), ' ', variables('cmSessionsConnStr'), ' ', parameters('macDecryption'), ' ', parameters('macDecryptionKey'), ' ', parameters('macValidation'), ' ', parameters('macValidationKey'))]",
 
     "cmNSGName": "[concat(variables('cmResourcePrefix'),'NSG')]",
 
@@ -322,16 +432,16 @@
     "cdImageOffer": "WindowsServer",
     "cdImageSKU": "2012-R2-Datacenter",
     "cdSubnetRef": "[concat(variables('vnetId'),'/subnets/',parameters('frontendWebSubnetName'))]",
-    "cdStorageAccountName": "[toLower(concat('CDB',uniqueString(resourceGroup().id)))]",
+    "cdStorageAccountName": "[toLower(concat('CD',uniqueString(resourceGroup().id)))]",
     "cdPublicLBIPName": "[concat(variables('cdResourcePrefix'),'LBPublicIP')]",
     "cdPublicLBIPDNSName": "[toLower(concat(variables('cdResourcePrefix'),'publicLBIPName'))]",
     "cdPublicLBIPId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('cdPublicLBIPName'))]",
+    "cdPublicIPAddressType": "Dynamic",
     "cdPublicLBId": "[resourceId('Microsoft.Network/loadBalancers',variables('cdPublicLBName'))]",
     "cdPublicLBName": "[concat(variables('cdResourcePrefix'),'LBPublic')]",
     "cdPublicLBFrontEndIPConfigId": "[concat(variables('cdPublicLBId'),'/frontendIPConfigurations/LoadBalancerFE')]",
     "cdPublicLBPoolId": "[concat(variables('cdPublicLBId'),'/backendAddressPools/BEPool')]",
     "cdPublicLBProbeId": "[concat(variables('cdPublicLBId'),'/probes/tcpPort80Probe')]",
-    "cdPublicIPAddressType": "Dynamic",
     "cdStorageAccountType": "Premium_LRS",
 
     "cdCoreConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Core\"')]",
@@ -339,7 +449,7 @@
     "cdMasterConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Master\"')]",
     "cdReportingConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Reporting\"')]",
     "cdSessionsConnStr": "[concat('\"user id=', parameters('sqlServerSqlLoginName'), ';password=', parameters('sqlServerSqlLoginPassword'), ';Data Source=', variables('sqlServerResourcePrefix'), ';Database=Sitecore.Sessions\"')]",
-    "cdCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdCoreConnStr'), ' ', variables('cdMasterConnStr'), ' ', variables('cdWebConnStr'), ' ', variables('cdReportingConnStr'), ' ', variables('cdSessionsConnStr'))]",
+    "cdCustomScriptCommandToExecute": "[concat('powershell.exe -File', ' ', parameters('cdCustomScriptFileToRun'), ' ', variables('setupSecureUri'), ' ', variables('licenseSecureUri'), ' ', 'd:\\SitecoreSetup.zip', ' ', 'd:\\SitecoreSetup', ' ', 'C:\\inetpub\\wwwroot\\AzureSitecore\\website', ' ', variables('cdCoreConnStr'), ' ', variables('cdMasterConnStr'), ' ', variables('cdWebConnStr'), ' ', variables('cdReportingConnStr'), ' ', variables('cdSessionsConnStr'), ' ', parameters('macDecryption'), ' ', parameters('macDecryptionKey'), ' ', parameters('macValidation'), ' ', parameters('macValidationKey'))]",
 
     "cdNSGName": "[concat(variables('cdResourcePrefix'),'NSG')]"
 
@@ -498,6 +608,12 @@
           ]
         },
         "subnets": [
+          {
+            "name": "[parameters('frontendWebAGSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('frontendWebAGSubnetPrefix')]"
+            }
+          },
           {
             "name": "[parameters('frontendWebSubnetName')]",
             "properties": {
@@ -903,8 +1019,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', concat(variables('cdResourcePrefix'),copyindex(),'PublicIP'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
-        "[concat('Microsoft.Network/loadBalancers/', variables('cdPublicLBName'))]"
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -1042,6 +1157,111 @@
         }
       ]
     },
+
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2015-06-15",
+      "name": "[variables('frontendWebAGIPName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('frontendWebAGIPAddressType')]"
+      }
+    },
+    {
+      "apiVersion": "2016-06-01",
+      "name": "[variables('frontendWebAGPrefix')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "[parameters('frontendWebAGSize')]",
+          "tier": "Standard",
+          "capacity": "[parameters('frontendWebAGInstanceCount')]"
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('frontendWebAGSubnetRef')]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGatewayFrontendIp",
+            "properties": {
+              "PublicIPAddress": {
+                "id": "[variables('frontendWebAGIPId')]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "appGatewayFrontendPort",
+            "properties": {
+              "Port": "80"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "appGatewayBackendPool",
+            "properties": {
+              "BackendAddresses": "[parameters('backendIPAddresses')]"
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "appGatewayBackendHttpSettings",
+            "properties": {
+              "Port": "80",
+              "Protocol": "Http",
+              "CookieBasedAffinity": "[parameters('frontendWebAGCookieBasedAffinity')]"
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "appGatewayHttpListener",
+            "properties": {
+              "FrontendIpConfiguration": {
+                "Id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('frontendWebAGPrefix')), '/frontendIPConfigurations/appGatewayFrontendIp')]"
+              },
+              "FrontendPort": {
+                "Id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('frontendWebAGPrefix')), '/frontendPorts/appGatewayFrontendPort')]"
+              },
+              "Protocol": "Http",
+              "SslCertificate": null
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "Name": "roundRobin",
+            "properties": {
+              "RuleType": "Basic",
+              "httpListener": {
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('frontendWebAGPrefix')), '/httpListeners/appGatewayHttpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('frontendWebAGPrefix')), '/backendAddressPools/appGatewayBackendPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('frontendWebAGPrefix')), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2015-06-15",
@@ -1088,7 +1308,7 @@
               "backendAddressPool": {
                 "id": "[variables('cdPublicLBPoolId')]"
               },
-              "protocol": "tcp",
+              "protocol": "Tcp",
               "frontendPort": 80,
               "backendPort": 80,
               "enableFloatingIP": false,
