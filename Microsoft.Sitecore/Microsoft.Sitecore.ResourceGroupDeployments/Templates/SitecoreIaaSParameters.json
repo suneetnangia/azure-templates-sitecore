@@ -62,6 +62,7 @@
       ]
     },
 
+
     // SQL Server Parameters
     "sqlServerVMSize": {
       "value": "Standard_DS3_v2"
