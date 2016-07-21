@@ -514,7 +514,7 @@
               "sourcePortRange": "*",
               "destinationPortRange": "3389",
               "sourceAddressPrefix": "Internet",
-              "destinationAddressPrefix": "[parameters('frontendWebSubnetPrefix')]",
+              "destinationAddressPrefix": "[parameters('backendWebSubnetPrefix')]",
               "access": "Allow",
               "priority": 100,
               "direction": "Inbound"
